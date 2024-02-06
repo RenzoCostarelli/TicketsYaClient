@@ -29,14 +29,17 @@ import { cn } from "@/lib/utils";
 import { Calendar } from "../ui/calendar";
 import { createEvent } from "@/lib/actions";
 import { useState } from "react";
+import { Textarea } from "../ui/textarea";
+import { format } from "date-fns";
 
 const formSchema = z.object({
   title: z.string().min(5, {
     message: "El titulo debe tener al menos 5 caracteres.",
   }),
   description: z.string(),
-  // date: z.date(),
   location: z.string(),
+  imageUrl: z.string(),
+  dates: z.date(),
 });
 
 export default function CreateEventDialogClient({
@@ -45,24 +48,37 @@ export default function CreateEventDialogClient({
   userId: string;
 }) {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [dates, setDates] = useState<string[]>([]);
+  const addDate = (date: string) => {
+    setDates((prevDates) => [...prevDates, date]);
+  };
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
       description: "",
-      // date: undefined,
+      dates: undefined,
       location: "",
+      imageUrl: "",
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    const datesString = dates.join(", ");
+    console.log(values);
+
     createEvent({
       title: values.title,
       description: values.description,
       location: values.location,
+      image: values.imageUrl,
+      dates: values.dates.toJSON(),
       userId: userId,
     })
-      .then(() => form.reset())
+      .then(() => {
+        form.reset();
+        setDates([]);
+      })
       .finally(() => setDialogOpen(false));
   }
 
@@ -89,7 +105,6 @@ export default function CreateEventDialogClient({
                   <FormControl>
                     <Input placeholder="Titulo del evento" {...field} />
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
@@ -101,13 +116,13 @@ export default function CreateEventDialogClient({
                 <FormItem>
                   <FormLabel>Descripción</FormLabel>
                   <FormControl>
-                    <Input placeholder="descripción del evento" {...field} />
+                    <Textarea placeholder="Descripción del evento" {...field} />
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="location"
@@ -116,6 +131,62 @@ export default function CreateEventDialogClient({
                   <FormLabel>Ubicación</FormLabel>
                   <FormControl>
                     <Input placeholder="ubicación del evento" {...field} />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="dates"
+              render={({ field }) => (
+                <FormItem onChange={() => setDates([field.value.toJSON()])}>
+                  <FormLabel>Fechas</FormLabel>
+                  <FormControl>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-[240px] pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Elegir una fecha</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) => date <= new Date()} //no se pueden seleccionar fechas anteriores a hoy
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="imageUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Imagen</FormLabel>
+                  <FormControl>
+                    <Input placeholder="imagen del evento" {...field} />
                   </FormControl>
 
                   <FormMessage />

@@ -49,16 +49,15 @@ export default function NavBar() {
             <Avatar className="h-9 w-9 ml-4">
               <AvatarImage alt="@shadcn" src={session.user?.image as string} />
               <AvatarFallback>JP</AvatarFallback>
-              <span className="sr-only">Toggle user menu</span>
+              <span className="sr-only">Desplegar menú de usuario</span>
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuLabel>{session.user?.name}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <Link href={"/dashboard"}>Dashboard</Link>
             </DropdownMenuItem>
-            <DropdownMenuItem>Support</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <Button onClick={() => signOut()}>Cerrar sesión</Button>

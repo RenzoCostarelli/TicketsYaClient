@@ -1,34 +1,32 @@
-import s from './page.module.scss'
+import s from "./page.module.scss";
 
-async function getEventById(id: string) {
-    const res = await fetch(`${process.env.apiUrl}/events/${id}`, {
-      cache: "no-store",
-    });
-    if (!res.ok) {
-      throw new Error("Failed to fetch events by id");
-    }
-    return res.json();
-}
+// async function getEventById(id: string) {
+//     const res = await fetch(`${process.env.apiUrl}/events/${id}`, {
+//       cache: "no-store",
+//     });
+//     if (!res.ok) {
+//       throw new Error("Failed to fetch events by id");
+//     }
+//     return res.json();
+// }
 
 export default async function Evento({ params }: { params: { id: string } }) {
-    const { event } = await getEventById(params.id);
-    console.log('event', event)
-    return (
-        <>
-            <div className="bg-black w-full h-60"></div>
-            <div className="flex self-center w-80 bg-pink-300 mx-auto">
-                <div className={s.date_area}>
-                    <ul>
-                        <li>Test</li>
-                        <li>Test</li>
-                        <li>Test</li>
-                        <li>Test</li>
-                    </ul>
-                </div>
-                <ul>
-
-                </ul>
-            </div>
-        </>
-    )
+  // const { event } = await getEventById(params.id);
+  // console.log('event', event)
+  return (
+    <>
+      <div className="bg-black w-full h-60"></div>
+      <div className="flex self-center w-80 bg-pink-300 mx-auto">
+        <div className={s.date_area}>
+          <ul>
+            <li>Test</li>
+            <li>Test</li>
+            <li>Test</li>
+            <li>Test</li>
+          </ul>
+        </div>
+        <ul></ul>
+      </div>
+    </>
+  );
 }

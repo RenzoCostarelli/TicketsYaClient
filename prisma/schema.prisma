@@ -59,11 +59,36 @@ model Event {
   description String
   location    String
   image       String?
+  dates       String?
   startDate   DateTime?
+  endDate     DateTime?
   userId      String
-  ticketTypes String?
+  ticketTypes TicketType[]
   createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @default(now())
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("events")
+}
+
+enum TicketTypes {
+  NORMAL
+  ABONO
+  PROMO
+}
+
+model TicketType {
+  id            String       @id @default(cuid())
+  title         String
+  date          DateTime?
+  time          String?
+  price         Float
+  eventId       String
+  type          TicketTypes
+  event         Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  dates         String?      // JSON string para almacenar múltiples fechas de abonos
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@map("ticket_types")
 }

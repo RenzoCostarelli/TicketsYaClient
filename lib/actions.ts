@@ -8,6 +8,8 @@ export type Evento = {
   description: string;
   location: string;
   userId: string;
+  image: string;
+  dates: string;
 };
 
 export async function createEvent(data: Evento) {

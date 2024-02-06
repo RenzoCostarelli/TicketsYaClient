@@ -13,7 +13,7 @@ export default async function Home() {
       </h1>
       {eventos &&
         eventos.map((evento: any) => (
-          <EventCard evento={evento} key={evento.eventId} />
+          <EventCard evento={evento} key={evento.id} />
         ))}
     </main>
   );

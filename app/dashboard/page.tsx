@@ -27,6 +27,7 @@ import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { getUserByEmail } from "@/lib/api/users";
+import Image from "next/image";
 
 export default async function Dashboard() {
   const session = await getServerSession(authOptions);
@@ -79,18 +80,14 @@ export default async function Dashboard() {
         {eventos &&
           eventos.map((evento) => (
             <>
-              <Card className="w-full max-w-md">
+              <Card className="w-full max-w-md" key={evento.id}>
                 <CardHeader className="flex flex-row items-center gap-2">
-                  <img
-                    alt="Event thumbnail"
-                    className="w-16 h-16 rounded-lg"
-                    height="100"
-                    src="/placeholder.svg"
-                    style={{
-                      aspectRatio: "100/100",
-                      objectFit: "cover",
-                    }}
-                    width="100"
+                  <Image
+                    src={evento?.image || ""}
+                    alt="text"
+                    width={100}
+                    height={100}
+                    style={{ objectFit: "cover", aspectRatio: 1 }}
                   />
                   <div className="grid gap-1">
                     <CardTitle>{evento.title}</CardTitle>

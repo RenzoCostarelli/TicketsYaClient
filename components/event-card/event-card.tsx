@@ -3,7 +3,6 @@ import { Card, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import Link from "next/link";
 
 export default function EventCard({ evento }: { evento: any }) {
-  console.log("evento", evento);
   return (
     <Link href={`eventos/${evento.id}`}>
       <Card>

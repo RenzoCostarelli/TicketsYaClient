@@ -1,14 +1,17 @@
-import { Evento } from "@/types/event"
-import { Card, CardDescription, CardHeader, CardTitle } from "../ui/card"
+import { Evento } from "@/types/event";
+import { Card, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import Link from "next/link";
 
-
-export default function EventCard({evento}: {evento:Evento}) {
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle>{evento.title}</CardTitle>
-                <CardDescription>{evento.eventId}</CardDescription>                
-            </CardHeader>
-        </Card>
-    )
+export default function EventCard({ evento }: { evento: any }) {
+  console.log("evento", evento);
+  return (
+    <Link href={`eventos/${evento.id}`}>
+      <Card>
+        <CardHeader>
+          <CardTitle>{evento.title}</CardTitle>
+          <CardDescription>{evento.id}</CardDescription>
+        </CardHeader>
+      </Card>
+    </Link>
+  );
 }

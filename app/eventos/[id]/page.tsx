@@ -1,16 +1,18 @@
 import s from './page.module.scss'
+
 async function getEventById(id: string) {
     const res = await fetch(`${process.env.apiUrl}/events/${id}`, {
       cache: "no-store",
     });
     if (!res.ok) {
-      throw new Error("Failed to fetch data");
+      throw new Error("Failed to fetch events by id");
     }
     return res.json();
-  }
+}
 
 export default async function Evento({ params }: { params: { id: string } }) {
     const { event } = await getEventById(params.id);
+    console.log('event', event)
     return (
         <>
             <div className="bg-black w-full h-60"></div>

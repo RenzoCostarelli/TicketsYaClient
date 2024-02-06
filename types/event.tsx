@@ -20,7 +20,7 @@ export type TicketType = {
     title: string;
     description: string;
     address: string;
-    dates: string[]; // You might want to replace this with a more specific date type
+    dates: string[]; 
     price: number;
     purchasedTicketsList: string[];
     ticketsTypeList: TicketType[];

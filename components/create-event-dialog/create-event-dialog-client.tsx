@@ -31,6 +31,7 @@ import { createEvent } from "@/lib/actions";
 import { useState } from "react";
 import { Textarea } from "../ui/textarea";
 import { format } from "date-fns";
+import DatesPicker from "../dates-picker/dates-picker";
 
 const formSchema = z.object({
   title: z.string().min(5, {
@@ -48,8 +49,8 @@ export default function CreateEventDialogClient({
   userId: string;
 }) {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-  const [dates, setDates] = useState<string[]>([]);
-  const addDate = (date: string) => {
+  const [dates, setDates] = useState<Date[]>([]);
+  const addDate = (date: Date) => {
     setDates((prevDates) => [...prevDates, date]);
   };
   const form = useForm<z.infer<typeof formSchema>>({
@@ -66,7 +67,9 @@ export default function CreateEventDialogClient({
   function onSubmit(values: z.infer<typeof formSchema>) {
     const datesString = dates.join(", ");
     console.log(values);
-
+    console.log("dates", dates);
+    console.log("dates string", datesString);
+    return;
     createEvent({
       title: values.title,
       description: values.description,
@@ -141,7 +144,7 @@ export default function CreateEventDialogClient({
               control={form.control}
               name="dates"
               render={({ field }) => (
-                <FormItem onChange={() => setDates([field.value.toJSON()])}>
+                <FormItem>
                   <FormLabel>Fechas</FormLabel>
                   <FormControl>
                     <Popover>
@@ -179,6 +182,7 @@ export default function CreateEventDialogClient({
                 </FormItem>
               )}
             />
+            <DatesPicker />
             <FormField
               control={form.control}
               name="imageUrl"
@@ -188,7 +192,6 @@ export default function CreateEventDialogClient({
                   <FormControl>
                     <Input placeholder="imagen del evento" {...field} />
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}

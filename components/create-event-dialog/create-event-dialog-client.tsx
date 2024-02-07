@@ -40,7 +40,6 @@ const formSchema = z.object({
   description: z.string(),
   location: z.string(),
   imageUrl: z.string(),
-  dates: z.date(),
 });
 
 export default function CreateEventDialogClient({
@@ -49,42 +48,63 @@ export default function CreateEventDialogClient({
   userId: string;
 }) {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-  const [dates, setDates] = useState<Date[]>([]);
-  const addDate = (date: Date) => {
-    setDates((prevDates) => [...prevDates, date]);
-  };
+  const [dateTimeSelections, setDateTimeSelections] = useState([
+    { id: 0, date: new Date().toISOString().slice(0, 16) },
+  ]);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
       description: "",
-      dates: undefined,
       location: "",
       imageUrl: "",
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    const datesString = dates.join(", ");
     console.log(values);
-    console.log("dates", dates);
-    console.log("dates string", datesString);
+    console.log(dateTimeSelections);
+    // parsear las fechas y guardarlas como string en dates
     return;
     createEvent({
       title: values.title,
       description: values.description,
       location: values.location,
       image: values.imageUrl,
-      dates: values.dates.toJSON(),
+      dates: "",
       userId: userId,
     })
       .then(() => {
         form.reset();
-        setDates([]);
+        setDateTimeSelections([]);
       })
       .finally(() => setDialogOpen(false));
   }
 
+  //date-tiem-picker stuff
+  const handleAddDateTime = () => {
+    const newSelection = {
+      id: dateTimeSelections.length,
+      date: new Date().toISOString().slice(0, 16),
+    };
+    setDateTimeSelections([...dateTimeSelections, newSelection]);
+  };
+
+  const handleRemoveDateTime = (id: number) => {
+    setDateTimeSelections(
+      dateTimeSelections.filter((selection) => selection.id !== id)
+    );
+  };
+
+  const handleDateChange = (date: string, id: number) => {
+    const updatedSelections = dateTimeSelections.map((selection) => {
+      if (selection.id === id) {
+        return { ...selection, date: date };
+      }
+      return selection;
+    });
+    setDateTimeSelections(updatedSelections);
+  };
   return (
     <Dialog open={dialogOpen} onOpenChange={() => setDialogOpen(!dialogOpen)}>
       <DialogTrigger asChild>
@@ -140,49 +160,12 @@ export default function CreateEventDialogClient({
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="dates"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Fechas</FormLabel>
-                  <FormControl>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-[240px] pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>Elegir una fecha</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) => date <= new Date()} //no se pueden seleccionar fechas anteriores a hoy
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
+            <DatesPicker
+              dateTimeSelections={dateTimeSelections}
+              onAddDateTime={handleAddDateTime}
+              onRemoveDateTime={handleRemoveDateTime}
+              onDateChange={handleDateChange}
             />
-            <DatesPicker />
             <FormField
               control={form.control}
               name="imageUrl"

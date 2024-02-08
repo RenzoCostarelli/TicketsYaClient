@@ -28,7 +28,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { Calendar } from "../ui/calendar";
 import { createEvent } from "@/lib/actions";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Textarea } from "../ui/textarea";
 import { format } from "date-fns";
 import DatesPicker from "../dates-picker/dates-picker";
@@ -61,50 +61,57 @@ export default function CreateEventDialogClient({
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    console.log(dateTimeSelections);
-    // parsear las fechas y guardarlas como string en dates
-    return;
-    createEvent({
-      title: values.title,
-      description: values.description,
-      location: values.location,
-      image: values.imageUrl,
-      dates: "",
-      userId: userId,
-    })
-      .then(() => {
-        form.reset();
-        setDateTimeSelections([]);
-      })
-      .finally(() => setDialogOpen(false));
-  }
-
-  //date-tiem-picker stuff
-  const handleAddDateTime = () => {
+  const handleAddDateTime = useCallback(() => {
     const newSelection = {
       id: dateTimeSelections.length,
       date: new Date().toISOString().slice(0, 16),
     };
     setDateTimeSelections([...dateTimeSelections, newSelection]);
-  };
+  }, [dateTimeSelections]);
 
-  const handleRemoveDateTime = (id: number) => {
-    setDateTimeSelections(
-      dateTimeSelections.filter((selection) => selection.id !== id)
-    );
-  };
+  const handleRemoveDateTime = useCallback(
+    (id: number) => {
+      setDateTimeSelections(
+        dateTimeSelections.filter((selection) => selection.id !== id)
+      );
+    },
+    [dateTimeSelections]
+  );
 
-  const handleDateChange = (date: string, id: number) => {
-    const updatedSelections = dateTimeSelections.map((selection) => {
-      if (selection.id === id) {
-        return { ...selection, date: date };
-      }
-      return selection;
-    });
-    setDateTimeSelections(updatedSelections);
-  };
+  const handleDateChange = useCallback(
+    (date: string, id: number) => {
+      const updatedSelections = dateTimeSelections.map((selection) => {
+        if (selection.id === id) {
+          return { ...selection, date: date };
+        }
+        return selection;
+      });
+      setDateTimeSelections(updatedSelections);
+    },
+    [dateTimeSelections]
+  );
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values);
+    console.log(dateTimeSelections);
+    const parsedDates = JSON.stringify(dateTimeSelections);
+    // console.log(parsedDates);
+    // return;
+    createEvent({
+      title: values.title,
+      description: values.description,
+      location: values.location,
+      image: values.imageUrl,
+      dates: parsedDates,
+      userId: userId,
+    })
+      .then(() => {
+        form.reset();
+        // setDateTimeSelections([]);
+      })
+      .finally(() => setDialogOpen(false));
+  }
+
   return (
     <Dialog open={dialogOpen} onOpenChange={() => setDialogOpen(!dialogOpen)}>
       <DialogTrigger asChild>
@@ -112,13 +119,16 @@ export default function CreateEventDialogClient({
           <Plus /> Nuevo evento
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Datos del evento</DialogTitle>
           <DialogDescription>USERID = {userId}</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form
+            onSubmit={form.handleSubmit((values) => onSubmit(values))}
+            className="space-y-8"
+          >
             <FormField
               control={form.control}
               name="title"

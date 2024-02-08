@@ -12,7 +12,7 @@ const nextConfig = {
     GOOGLE_SECRET: "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",
   },
   images: {
-    remotePatterns: ["serv1.evento-simple.com"],
+    domains: ["serv1.evento-simple.com"],
   },
 };
 

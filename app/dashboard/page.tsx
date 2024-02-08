@@ -35,7 +35,7 @@ export default async function Dashboard() {
   const eventos = await getEventsByUserId(id);
 
   return (
-    <div className="flex flex-col items-center gap-8 p-4 md:p-8">
+    <>
       <nav className="w-full max-w-md flex justify-around mb-8">
         <Link
           className="text-lg font-semibold text-gray-700 hover:text-gray-900"
@@ -62,7 +62,7 @@ export default async function Dashboard() {
           Perfil
         </Link>
       </nav>
-      <CreateEventDialog />
+      <Link href={"/dashoard/new-event"}>Nuevo evento</Link>
       <main className="flex flex-col items-center gap-8 p-4 md:p-8">
         <div className="flex">
           <Input type="text" placeholder="Buscar evento" />
@@ -94,7 +94,7 @@ export default async function Dashboard() {
                     <CardDescription>{evento.description}</CardDescription>
                   </div>
                 </CardHeader>
-                <CardFooter className="flex justify-end gap-4">
+                <CardFooter className="flex justify-between gap-4">
                   <Button size="icon" variant="ghost">
                     <FileEditIcon className="w-6 h-6" />
                     <span className="sr-only">Edit</span>
@@ -116,6 +116,6 @@ export default async function Dashboard() {
             </>
           ))}
       </main>
-    </div>
+    </>
   );
 }

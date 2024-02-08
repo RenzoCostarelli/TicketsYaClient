@@ -19,7 +19,9 @@ export default async function DashboardLayout({
   }
   return (
     <main>
-      <div>{children}</div>
+      <div className="flex flex-col items-center gap-8 p-4 md:p-8">
+        {children}
+      </div>
     </main>
   );
 }

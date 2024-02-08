@@ -24,7 +24,7 @@ export default function DatesPicker({
     <div>
       {dateTimeSelections.map((selection, index) => (
         <div
-          key={selection.id}
+          key={index}
           style={{
             marginBottom: "10px",
             display: "flex",
@@ -38,11 +38,20 @@ export default function DatesPicker({
             style={{ marginRight: "10px" }}
           />
           {index === dateTimeSelections.length - 1 ? (
-            <button onClick={onAddDateTime} style={{ marginRight: "5px" }}>
+            <button
+              onClick={onAddDateTime}
+              style={{ marginRight: "5px" }}
+              type="button"
+            >
               +
             </button>
           ) : (
-            <button onClick={() => onRemoveDateTime(selection.id)}>-</button>
+            <button
+              type="button"
+              onClick={() => onRemoveDateTime(selection.id)}
+            >
+              -
+            </button>
           )}
         </div>
       ))}

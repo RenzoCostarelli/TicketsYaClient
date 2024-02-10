@@ -62,7 +62,7 @@ export default async function Dashboard() {
           Perfil
         </Link>
       </nav>
-      <Link href={"/dashoard/new-event"}>Nuevo evento</Link>
+      <Link href={"/dashboard/new-event"}>Nuevo evento</Link>
       <main className="flex flex-col items-center gap-8 p-4 md:p-8">
         <div className="flex">
           <Input type="text" placeholder="Buscar evento" />
@@ -95,10 +95,11 @@ export default async function Dashboard() {
                   </div>
                 </CardHeader>
                 <CardFooter className="flex justify-between gap-4">
-                  <Button size="icon" variant="ghost">
+                  <Link href={`dashboard/event/${evento.id}`}>
                     <FileEditIcon className="w-6 h-6" />
                     <span className="sr-only">Edit</span>
-                  </Button>
+                  </Link>
+
                   <Button size="icon" variant="ghost">
                     <BarChartIcon className="w-6 h-6" />
                     <span className="sr-only">Statistics</span>

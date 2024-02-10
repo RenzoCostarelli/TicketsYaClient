@@ -23,3 +23,24 @@ export async function createEvent(data: Evento) {
 
   revalidatePath("/dashboard");
 }
+
+export async function updateEvent(data: Evento, eventId: string) {
+  try {
+    const result = await Eventos.updateEvent(eventId, data);
+    console.log("Evento editado:", result);
+    revalidatePath(`/dashboard/event/${result.id}`);
+  } catch (error) {
+    console.log("Error editando el evento:", error);
+    throw new Error("Error editando el evento");
+  }
+}
+
+export async function getEventById(eventId: string) {
+  try {
+    const result = await Eventos.getEventById(eventId);
+    return result;
+  } catch (error) {
+    console.log("Error en getEventById:", error);
+    throw new Error("Error o");
+  }
+}

@@ -4,7 +4,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { createEvent } from "@/lib/actions";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Form,
   FormControl,
@@ -37,7 +37,7 @@ export default function CreateEventForm({ userId }: { userId: string }) {
       title: "",
       description: "",
       location: "",
-      imageUrl: "",
+      imageUrl: "https://placehold.co/600x400/EEE/31343C",
     },
   });
 
@@ -66,11 +66,8 @@ export default function CreateEventForm({ userId }: { userId: string }) {
   };
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    console.log(dateTimeSelections);
     const parsedDates = JSON.stringify(dateTimeSelections);
-    // console.log(parsedDates);
-    // return;
+
     createEvent({
       title: values.title,
       description: values.description,
@@ -78,10 +75,14 @@ export default function CreateEventForm({ userId }: { userId: string }) {
       image: values.imageUrl,
       dates: parsedDates,
       userId: userId,
-    }).then(() => {
-      form.reset();
-      // setDateTimeSelections([]);
-    });
+    })
+      .then(() => {
+        form.reset();
+        alert("Evento creado");
+      })
+      .catch((error) => {
+        console.log("error creando evento", error);
+      });
   }
 
   return (

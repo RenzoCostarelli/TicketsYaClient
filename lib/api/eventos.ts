@@ -9,8 +9,12 @@ export async function getEventsByUserId(userId: string) {
     include: {
       user: true,
     },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 }
+
 export async function getAllEvents() {
   return await db.event.findMany({
     include: {
@@ -21,4 +25,24 @@ export async function getAllEvents() {
 
 export async function createEvent(data: Evento) {
   return await db.event.create({ data });
+}
+
+export async function updateEvent(eventId: string, eventData: Partial<Evento>) {
+  return await db.event.update({
+    where: {
+      id: eventId,
+    },
+    data: eventData,
+  });
+}
+
+export async function getEventById(eventId: string) {
+  return await db.event.findUnique({
+    where: {
+      id: eventId,
+    },
+    include: {
+      user: true,
+    },
+  });
 }

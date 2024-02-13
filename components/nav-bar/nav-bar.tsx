@@ -46,7 +46,7 @@ export default function NavBar() {
       {session && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Avatar className="h-9 w-9 ml-4">
+            <Avatar className="h-9 w-9 ml-4 cursor-pointer">
               <AvatarImage alt="@shadcn" src={session.user?.image as string} />
               <AvatarFallback>JP</AvatarFallback>
               <span className="sr-only">Desplegar menú de usuario</span>

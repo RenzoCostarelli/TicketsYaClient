@@ -77,6 +77,13 @@ enum TicketTypes {
   PROMO
 }
 
+enum TicketTypeStatus {
+  ACTIVE
+  INACTIVE
+  ENDED
+  REMOVED
+}
+
 model TicketType {
   id            String       @id @default(cuid())
   title         String
@@ -84,7 +91,12 @@ model TicketType {
   time          String?
   price         Float
   eventId       String
+  status        TicketTypeStatus
   type          TicketTypes
+  startDate     DateTime?
+  endDate       DateTime?
+  quantity      Int
+  position      Int
   event         Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
   dates         String?      // JSON string para almacenar múltiples fechas de abonos
   createdAt     DateTime     @default(now())
@@ -92,3 +104,4 @@ model TicketType {
 
   @@map("ticket_types")
 }
+

@@ -89,7 +89,7 @@ export default function CreateEventForm({ userId }: { userId: string }) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit((values) => onSubmit(values))}
-        className="space-y-8"
+        className="space-y-8 w-[100%]"
       >
         <FormField
           control={form.control}

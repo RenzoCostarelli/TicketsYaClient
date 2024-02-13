@@ -26,8 +26,24 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { DollarSign, TicketIcon } from "lucide-react";
+import { CalendarIcon, DollarSign, TicketIcon } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import Link from "next/link";
 
 const formSchema = z.object({
   title: z.string().min(5, {
@@ -100,76 +116,79 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
   }
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit((values) => onSubmit(values))}
-        className="space-y-8"
-      >
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Titulo</FormLabel>
-              <FormControl>
-                <Input placeholder="Titulo del evento" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Descripción</FormLabel>
-              <FormControl>
-                <Textarea placeholder="Descripción del evento" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit((values) => onSubmit(values))}
+          className="space-y-8"
+        >
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Titulo</FormLabel>
+                <FormControl>
+                  <Input placeholder="Titulo del evento" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Descripción</FormLabel>
+                <FormControl>
+                  <Textarea placeholder="Descripción del evento" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="location"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Ubicación</FormLabel>
-              <FormControl>
-                <Input placeholder="ubicación del evento" {...field} />
-              </FormControl>
+          <FormField
+            control={form.control}
+            name="location"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Ubicación</FormLabel>
+                <FormControl>
+                  <Input placeholder="ubicación del evento" {...field} />
+                </FormControl>
 
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <DatesPicker
-          dateTimeSelections={dateTimeSelections}
-          onAddDateTime={handleAddDateTime}
-          onRemoveDateTime={handleRemoveDateTime}
-          onDateChange={handleDateChange}
-        />
-        <FormField
-          control={form.control}
-          name="imageUrl"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Imagen</FormLabel>
-              <FormControl>
-                <Input placeholder="imagen del evento" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <Button type="submit">Guardar evento</Button>
-        <TicketTypesDialog eventId={evento.id} dates={parsedDates} />
-      </form>
-    </Form>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <DatesPicker
+            dateTimeSelections={dateTimeSelections}
+            onAddDateTime={handleAddDateTime}
+            onRemoveDateTime={handleRemoveDateTime}
+            onDateChange={handleDateChange}
+          />
+          <FormField
+            control={form.control}
+            name="imageUrl"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Imagen</FormLabel>
+                <FormControl>
+                  <Input placeholder="imagen del evento" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit">Guardar evento</Button>
+          <Link href={`/dashboard/evento/ticket-types/${evento.id}`}>
+            Tipo de tickets
+          </Link>
+        </form>
+      </Form>
+    </>
   );
 }
 
@@ -179,6 +198,10 @@ const ticketsFormSchema = z.object({
     .min(1, "Debes seleccionar al menos una fecha."),
   title: z.string(),
   price: z.number(),
+  quantity: z.number(),
+  status: z.string(),
+  startDate: z.date(),
+  endDate: z.date(),
 });
 
 function TicketTypesDialog({
@@ -231,6 +254,69 @@ function TicketTypesDialog({
                   <FormControl>
                     <Input type="number" {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="endDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Disponible hasta</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-[240px] pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) => date < new Date()}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Estado</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Estado" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="ACTIVE">Publicada</SelectItem>
+                      <SelectItem value="INACTIVE">Borrador</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

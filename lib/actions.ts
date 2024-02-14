@@ -2,6 +2,7 @@
 
 import * as Eventos from "@/lib/api/eventos";
 import * as TicketTypes from "@/lib/api/ticket-types";
+import { TicketType, UpdateTicketTypeType } from "@/types/tickets";
 import { revalidatePath } from "next/cache";
 // Type temporal
 export type Evento = {
@@ -53,5 +54,30 @@ export async function getTicketTypesByEventId(eventId: string) {
   } catch (error) {
     console.log("Error en getTicketTypesByEventId:", error);
     throw new Error("Error en getTicketTypesByEventId");
+  }
+}
+
+export async function createTicketType(data: TicketType) {
+  try {
+    const result = await TicketTypes.createTicketType(data);
+    console.log("TicketType creado:", result);
+  } catch (error) {
+    console.log("Error creando el TicketType:", error);
+    throw new Error("Error creando el TicketType");
+  }
+
+  revalidatePath("/dashboard");
+}
+
+export async function updateTicketType(
+  data: UpdateTicketTypeType,
+  ticketId: string
+) {
+  try {
+    const result = await TicketTypes.updateTicketType(ticketId, data);
+    console.log("Tipo de ticket editado:", result);
+    revalidatePath(`/dashboard/evento/${result.id}`);
+  } catch (error) {
+    console.log("Error editando el tipo de ticket:", error);
   }
 }

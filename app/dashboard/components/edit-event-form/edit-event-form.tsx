@@ -3,8 +3,8 @@
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { createEvent, updateEvent } from "@/lib/actions";
-import { useEffect, useState } from "react";
+import { updateEvent } from "@/lib/actions";
+import { useState } from "react";
 import {
   Form,
   FormControl,

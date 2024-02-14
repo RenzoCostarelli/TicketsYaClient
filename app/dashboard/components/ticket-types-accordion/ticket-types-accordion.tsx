@@ -9,6 +9,8 @@ import {
 
 import { Evento } from "@/types/event";
 import EditTycketTypeForm from "../edit-ticket-type-form/edit-ticket-type-form";
+import { TicketType } from "@/types/tickets";
+import TycketTypeForm from "../ticket-type-form/ticket-type-form";
 
 export default function TicketTypeAccordion({
   evento,
@@ -34,7 +36,10 @@ export default function TicketTypeAccordion({
         <h1>No hay tickets creados</h1>
       )}
       {/* Aca va el form para crear uno nuevo*/}
-      {/* <TycketTypeForm evento={evento} /> */}
+      <h2 className="mt-10 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
+        Nuevo tipo de ticket
+      </h2>
+      <TycketTypeForm evento={evento} />
     </div>
   );
 }

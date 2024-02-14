@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -22,6 +23,7 @@ export default async function DashboardLayout({
       <div className="flex flex-col items-center gap-8 p-4 md:p-8 max-w-md mx-auto">
         {children}
       </div>
+      <Toaster />
     </main>
   );
 }

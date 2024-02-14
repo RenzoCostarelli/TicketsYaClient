@@ -1,3 +1,4 @@
+"use client";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -29,39 +30,76 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Evento } from "@/types/event";
+import { createTicketType, updateTicketType } from "@/lib/actions";
+import { DatesType, TicketType, UpdateTicketTypeType } from "@/types/tickets";
+import { randomUUID } from "crypto";
+import { useToast } from "@/components/ui/use-toast";
 
-const ticketsFormSchema = z.object({
+const FormSchema = z.object({
   selectedDates: z
-    .array(z.number())
-    .min(1, "Debes seleccionar al menos una fecha."),
+    .array(z.string())
+    .refine((value) => value.some((item) => item), {
+      message: "Debes seleccionar al menos una fecha",
+    }),
   title: z.string(),
   price: z.number(),
   quantity: z.number(),
-  status: z.string(),
-  startDate: z.date(),
-  endDate: z.date(),
+  status: z.enum(["ACTIVE", "INACTIVE", "ENDED", "REMOVED"]),
+  // startDate: z.date(),
+  endDate: z.date().optional(),
 });
 
 export default function TycketTypeForm({ evento }: { evento: Evento }) {
-  const parsedDates = JSON.parse(evento.dates);
-  const form = useForm<z.infer<typeof ticketsFormSchema>>({
-    resolver: zodResolver(ticketsFormSchema),
+  const { toast } = useToast();
+  const parsedEventDates = JSON.parse(evento.dates);
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
     defaultValues: {
-      selectedDates: parsedDates,
+      selectedDates: [],
       title: "",
-      price: 0,
+      price: 0 as number,
+      status: "ACTIVE",
+      quantity: 0,
+      // startDate: undefined,
+      endDate: undefined,
     },
   });
-  function onSubmit(values: z.infer<typeof ticketsFormSchema>) {
+  function onSubmit(values: z.infer<typeof FormSchema>) {
     console.log("values", values);
+    const formatedDates = values.selectedDates.map((date, index) => ({
+      id: index,
+      date: date,
+    }));
+    const stringDates = JSON.stringify(formatedDates);
+    const data: TicketType = {
+      title: values.title,
+      price: values.price as number,
+      dates: stringDates,
+      quantity: values.quantity,
+      endDate: values.endDate,
+      status: values.status,
+      eventId: evento.id,
+      position: 0,
+      type: "NORMAL",
+    };
+
+    try {
+      createTicketType(data);
+      form.reset();
+      toast({
+        title: "Tipo de ticket creado!",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error al crear el tipo de ticket!",
+      });
+    }
   }
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit((values) => onSubmit(values))}
-        className="space-y-8"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 px-1">
         <FormField
           control={form.control}
           name="title"
@@ -82,8 +120,74 @@ export default function TycketTypeForm({ evento }: { evento: Evento }) {
             <FormItem>
               <FormLabel>Precio</FormLabel>
               <FormControl>
-                <Input type="number" {...field} />
+                <Input
+                  type="number"
+                  {...field}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
+                />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="quantity"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Cantidad disponible</FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  {...field}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="selectedDates"
+          render={() => (
+            <FormItem>
+              <div className="mb-4"></div>
+              <FormLabel>Fecha(s)</FormLabel>
+              {parsedEventDates.map((item: DatesType) => (
+                <FormField
+                  key={item.id}
+                  control={form.control}
+                  name="selectedDates"
+                  render={({ field }) => {
+                    return (
+                      <FormItem
+                        key={item.id}
+                        className="flex flex-row items-start space-x-3 space-y-0"
+                      >
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value?.includes(item.date)}
+                            onCheckedChange={(checked) => {
+                              return checked
+                                ? field.onChange([...field.value, item.date])
+                                : field.onChange(
+                                    field.value?.filter(
+                                      (value) => value !== item.date
+                                    )
+                                  );
+                            }}
+                          />
+                        </FormControl>
+                        <FormLabel className="text-sm font-normal">
+                          {item.date}
+                        </FormLabel>
+                      </FormItem>
+                    );
+                  }}
+                />
+              ))}
               <FormMessage />
             </FormItem>
           )}
@@ -92,7 +196,7 @@ export default function TycketTypeForm({ evento }: { evento: Evento }) {
           control={form.control}
           name="endDate"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="flex flex-col">
               <FormLabel>Disponible hasta</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
@@ -107,7 +211,7 @@ export default function TycketTypeForm({ evento }: { evento: Evento }) {
                       {field.value ? (
                         format(field.value, "PPP")
                       ) : (
-                        <span>Pick a date</span>
+                        <span>Seleccionar fecha</span>
                       )}
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
@@ -133,7 +237,7 @@ export default function TycketTypeForm({ evento }: { evento: Evento }) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Estado</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Estado" />
@@ -148,59 +252,6 @@ export default function TycketTypeForm({ evento }: { evento: Evento }) {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="selectedDates"
-          render={() => (
-            <FormItem>
-              <div className="mb-4">
-                <FormLabel className="text-base">Fechas</FormLabel>
-              </div>
-              {parsedDates.map((date: any) => {
-                const dateObject = new Date(date.date);
-                const arDate = new Intl.DateTimeFormat("es-AR", {
-                  dateStyle: "medium",
-                  timeStyle: "short",
-                }).format(dateObject);
-                return (
-                  <FormField
-                    key={date.id}
-                    control={form.control}
-                    name="selectedDates"
-                    render={({ field }) => {
-                      return (
-                        <FormItem
-                          key={date.id}
-                          className="flex flex-row items-start space-x-3 space-y-0"
-                        >
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value?.includes(date.id)}
-                              onCheckedChange={(checked) => {
-                                return checked
-                                  ? field.onChange([...field.value, date.id])
-                                  : field.onChange(
-                                      field.value?.filter(
-                                        (value) => value !== date.id
-                                      )
-                                    );
-                              }}
-                            />
-                          </FormControl>
-                          <FormLabel className="text-sm font-normal">
-                            {arDate}
-                          </FormLabel>
-                        </FormItem>
-                      );
-                    }}
-                  />
-                );
-              })}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         <Button type="submit">Guardar ticket</Button>
       </form>
     </Form>

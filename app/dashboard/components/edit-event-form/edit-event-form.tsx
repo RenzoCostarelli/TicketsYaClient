@@ -51,6 +51,7 @@ const formSchema = z.object({
   }),
   description: z.string(),
   location: z.string(),
+  address: z.string(),
   imageUrl: z.string(),
 });
 
@@ -63,7 +64,8 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
     defaultValues: {
       title: evento.title,
       description: evento.description,
-      location: evento.description,
+      location: evento.location,
+      address: evento.address,
       imageUrl: evento.image,
     },
   });
@@ -100,9 +102,11 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
         title: values.title,
         description: values.description,
         location: values.location,
+        address: values.address,
         image: values.imageUrl,
         dates: parsedDates,
         userId: evento.userId,
+        status: "ACTIVE",
       },
       evento.id
     )
@@ -157,6 +161,20 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
                 <FormLabel>Ubicación</FormLabel>
                 <FormControl>
                   <Input placeholder="ubicación del evento" {...field} />
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="address"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Dirección</FormLabel>
+                <FormControl>
+                  <Input placeholder="Dirección del evento" {...field} />
                 </FormControl>
 
                 <FormMessage />

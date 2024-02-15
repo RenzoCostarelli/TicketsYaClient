@@ -91,7 +91,6 @@ export default function EditTycketTypeForm({
     try {
       updateTicketType(data, ticket.id as string);
       toast({
-        variant: "destructive",
         title: "Tipo de ticket editado!",
       });
     } catch (error) {

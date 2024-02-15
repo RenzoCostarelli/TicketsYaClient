@@ -5,6 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { createEvent } from "@/lib/actions";
 import { useEffect, useState } from "react";
+import Autocomplete from "react-google-autocomplete";
+import usePlacesService from "react-google-autocomplete/lib/usePlacesAutocompleteService";
 import {
   Form,
   FormControl,
@@ -24,6 +26,7 @@ const formSchema = z.object({
   }),
   description: z.string(),
   location: z.string(),
+  address: z.string(),
   imageUrl: z.string(),
 });
 
@@ -37,6 +40,7 @@ export default function CreateEventForm({ userId }: { userId: string }) {
       title: "",
       description: "",
       location: "",
+      address: "",
       imageUrl: "https://placehold.co/600x400/EEE/31343C",
     },
   });
@@ -72,9 +76,11 @@ export default function CreateEventForm({ userId }: { userId: string }) {
       title: values.title,
       description: values.description,
       location: values.location,
+      address: values.address,
       image: values.imageUrl,
       dates: parsedDates,
       userId: userId,
+      status: "ACTIVE",
     })
       .then(() => {
         form.reset();
@@ -123,7 +129,21 @@ export default function CreateEventForm({ userId }: { userId: string }) {
           name="location"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Ubicación</FormLabel>
+              <FormLabel>Lugar</FormLabel>
+              <FormControl>
+                <Input placeholder="ubicación del evento" {...field} />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="address"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Dirección</FormLabel>
               <FormControl>
                 <Input placeholder="ubicación del evento" {...field} />
               </FormControl>

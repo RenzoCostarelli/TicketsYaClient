@@ -2,25 +2,34 @@
 
 import * as Eventos from "@/lib/api/eventos";
 import * as TicketTypes from "@/lib/api/ticket-types";
+import { EventStatus } from "@/types/event";
 import { TicketType, UpdateTicketTypeType } from "@/types/tickets";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 // Type temporal
 export type Evento = {
   title: string;
   description: string;
+  address: string;
   location: string;
   userId: string;
   image: string;
   dates: string;
+  status: EventStatus;
 };
 
 export async function createEvent(data: Evento) {
+  let eventId = null;
   try {
     const result = await Eventos.createEvent(data);
     console.log("Evento creado:", result);
+    eventId = result.id;
   } catch (error) {
     console.log("Error creando el evento:", error);
     throw new Error("Error creando el evento");
+  }
+  if (eventId) {
+    redirect(`/dashboard/evento/${eventId}`);
   }
 
   revalidatePath("/dashboard");

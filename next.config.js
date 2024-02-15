@@ -12,10 +12,13 @@ const nextConfig = {
     GOOGLE_SECRET: "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",
   },
   images: {
-    domains: [
-      "serv1.evento-simple.com",
-      "upload.wikimedia.org",
-      "placehold.co",
+    dangerouslyAllowSVG: true,
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "placehold.co",
+        pathname: "**",
+      },
     ],
   },
 };

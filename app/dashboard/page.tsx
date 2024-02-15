@@ -21,6 +21,7 @@ import {
   FileEditIcon,
   KeyIcon,
   Plus,
+  TicketIcon,
   TrashIcon,
 } from "lucide-react";
 import { getServerSession } from "next-auth";
@@ -36,7 +37,7 @@ export default async function Dashboard() {
 
   return (
     <>
-      <nav className="w-full max-w-md flex justify-around mb-8">
+      {/* <nav className="w-full max-w-md flex justify-around mb-8">
         <Link
           className="text-lg font-semibold text-gray-700 hover:text-gray-900"
           href="#"
@@ -61,8 +62,12 @@ export default async function Dashboard() {
         >
           Perfil
         </Link>
-      </nav>
-      <Link href={"/dashboard/nuevo-evento"}>Nuevo evento</Link>
+      </nav> */}
+      <Button asChild variant="secondary">
+        <Link href={"/dashboard/nuevo-evento"}>
+          <Plus className="mr-2" /> Nuevo evento
+        </Link>
+      </Button>
       <main className="flex flex-col items-center gap-8 p-4 md:p-8">
         <div className="flex">
           <Input type="text" placeholder="Buscar evento" />
@@ -97,12 +102,15 @@ export default async function Dashboard() {
                 <CardFooter className="flex justify-between gap-4">
                   <Link href={`dashboard/evento/${evento.id}`}>
                     <FileEditIcon className="w-6 h-6" />
-                    <span className="sr-only">Edit</span>
+                    <span className="sr-only">Editar</span>
                   </Link>
-
+                  <Link href={`dashboard/evento/ticket-types/${evento.id}`}>
+                    <TicketIcon className="w-6 h-6" />
+                    <span className="sr-only">Tickets</span>
+                  </Link>
                   <Button size="icon" variant="ghost">
                     <BarChartIcon className="w-6 h-6" />
-                    <span className="sr-only">Statistics</span>
+                    <span className="sr-only">Estadisticas</span>
                   </Button>
                   <Button size="icon" variant="ghost">
                     <KeyIcon className="w-6 h-6" />
@@ -110,7 +118,7 @@ export default async function Dashboard() {
                   </Button>
                   <Button className="text-red-500" size="icon" variant="ghost">
                     <TrashIcon className="w-6 h-6" />
-                    <span className="sr-only">Delete</span>
+                    <span className="sr-only">Eliminar</span>
                   </Button>
                 </CardFooter>
               </Card>

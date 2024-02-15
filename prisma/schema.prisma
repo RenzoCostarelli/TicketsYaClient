@@ -53,15 +53,24 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+enum GlobalStatus {
+  DRAFT
+  ACTIVE
+  CONCLUDED
+  DELETED
+}
+
 model Event {
   id          String      @id @default(cuid())
   title       String
   description String
+  address    String
   location    String
   image       String?
   dates       String?
   startDate   DateTime?
   endDate     DateTime?
+  status      GlobalStatus
   userId      String
   ticketTypes TicketType[]
   createdAt   DateTime     @default(now())

@@ -1,32 +1,41 @@
+import { getEventById } from "@/lib/actions";
 import s from "./page.module.scss";
-
-// async function getEventById(id: string) {
-//     const res = await fetch(`${process.env.apiUrl}/events/${id}`, {
-//       cache: "no-store",
-//     });
-//     if (!res.ok) {
-//       throw new Error("Failed to fetch events by id");
-//     }
-//     return res.json();
-// }
+import Image from "next/image";
+import { CalendarIcon } from "lucide-react";
 
 export default async function Evento({ params }: { params: { id: string } }) {
-  // const { event } = await getEventById(params.id);
-  // console.log('event', event)
+  const evento = await getEventById(params.id);
   return (
     <>
-      <div className="bg-black w-full h-60"></div>
-      <div className="flex self-center w-80 bg-pink-300 mx-auto">
-        <div className={s.date_area}>
-          <ul>
-            <li>Test</li>
-            <li>Test</li>
-            <li>Test</li>
-            <li>Test</li>
-          </ul>
+      <section className="w-full py-6 md:py-12">
+        <div className="container grid gap-6 px-4 md:px-6 lg:grid-cols-2 xl:gap-12">
+          <div className="flex flex-col justify-center space-y-4">
+            <div className="space-y-2">
+              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+                {evento?.title}
+              </h1>
+              <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                <CalendarIcon className="w-4 h-4 flex-shrink-0" />
+                <span className="text-sm font-medium">October 15, 2022</span>
+              </div>
+              <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                <span className="text-sm font-medium">{evento?.location}</span>
+              </div>
+            </div>
+            <div className="max-w-[700px] text-base/relaxed">
+              <p>{evento?.description}</p>
+            </div>
+          </div>
+          <div className="aspect-[16/9] relative">
+            <Image
+              src={evento?.image || ""}
+              alt="text"
+              fill
+              style={{ objectFit: "cover" }}
+            />
+          </div>
         </div>
-        <ul></ul>
-      </div>
+      </section>
     </>
   );
 }

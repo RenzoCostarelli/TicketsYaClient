@@ -19,6 +19,7 @@ import DatesPicker from "@/components/dates-picker/dates-picker";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 
 const formSchema = z.object({
   title: z.string().min(5, {
@@ -152,6 +153,7 @@ export default function CreateEventForm({ userId }: { userId: string }) {
             </FormItem>
           )}
         />
+        <Label>Fechas</Label>
         <DatesPicker
           dateTimeSelections={dateTimeSelections}
           onAddDateTime={handleAddDateTime}

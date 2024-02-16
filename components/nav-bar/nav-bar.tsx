@@ -17,17 +17,17 @@ export default function NavBar() {
   const { data: session } = useSession();
   return (
     <header className="flex h-20 w-full items-center px-4 md:px-6">
-      <Link className="mr-6" href="#">
+      <Link className="mr-6" href="/">
         <TicketIcon className="h-6 w-6" />
         <span className="sr-only">Mega Archi ticket Inc</span>
       </Link>
       <nav className="ml-auto flex gap-4 sm:gap-6">
-        <Link
+        {/* <Link
           className="text-sm font-medium hover:underline underline-offset-4 hover:text-green-500"
           href="#"
         >
           Eventos
-        </Link>
+        </Link> */}
         <Link
           className="text-sm font-medium hover:underline underline-offset-4 hover:text-green-500"
           href="#"

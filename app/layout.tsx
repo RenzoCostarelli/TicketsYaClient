@@ -24,7 +24,7 @@ export default async function RootLayout({
       <body className={inter.className}>
         <SessionProvider session={session}>
           <NavBar />
-          {children}
+          <main className="max-w-4xl mx-auto">{children}</main>
         </SessionProvider>
       </body>
     </html>

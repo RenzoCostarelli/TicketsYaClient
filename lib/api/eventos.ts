@@ -43,6 +43,7 @@ export async function getEventById(eventId: string) {
     },
     include: {
       user: true,
+      ticketTypes: true,
     },
   });
 }

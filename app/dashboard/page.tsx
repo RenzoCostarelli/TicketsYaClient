@@ -68,7 +68,7 @@ export default async function Dashboard() {
           <Plus className="mr-2" /> Nuevo evento
         </Link>
       </Button>
-      <main className="flex flex-col items-center gap-8 p-4 md:p-8">
+      <div className="flex flex-col items-center gap-8 p-4 md:p-8">
         <div className="flex">
           <Input type="text" placeholder="Buscar evento" />
           <Select>
@@ -85,7 +85,7 @@ export default async function Dashboard() {
         {eventos &&
           eventos.map((evento) => (
             <>
-              <Card className="w-full max-w-md" key={evento.id}>
+              <Card className="w-full max-w-xl" key={evento.id}>
                 <CardHeader className="flex flex-row items-center gap-2">
                   <Image
                     src={evento?.image || ""}
@@ -124,7 +124,7 @@ export default async function Dashboard() {
               </Card>
             </>
           ))}
-      </main>
+      </div>
     </>
   );
 }

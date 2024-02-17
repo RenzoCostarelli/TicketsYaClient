@@ -1,10 +1,15 @@
 import { getEventById } from "@/lib/actions";
-import s from "./page.module.scss";
 import Image from "next/image";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, MapPin } from "lucide-react";
+import { formatDatesByMonth, groupDatesByMonth } from "@/lib/utils";
+import TicketTypePicker from "@/components/ticket-type-picker/ticket-type-picker";
 
 export default async function Evento({ params }: { params: { id: string } }) {
   const evento = await getEventById(params.id);
+  const parsedDates = JSON.parse(evento?.dates as string);
+  const groupedMonths = groupDatesByMonth(parsedDates);
+  const groupedDates = formatDatesByMonth(groupedMonths);
+  console.log("evento", evento);
   return (
     <>
       <section className="w-full py-6 md:py-12">
@@ -16,9 +21,10 @@ export default async function Evento({ params }: { params: { id: string } }) {
               </h1>
               <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
                 <CalendarIcon className="w-4 h-4 flex-shrink-0" />
-                <span className="text-sm font-medium">October 15, 2022</span>
+                <span className="text-sm font-medium">{groupedDates}</span>
               </div>
               <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                <MapPin className="w-4 h-4 flex-shrink-0" />
                 <span className="text-sm font-medium">{evento?.location}</span>
               </div>
             </div>
@@ -34,6 +40,16 @@ export default async function Evento({ params }: { params: { id: string } }) {
               style={{ objectFit: "cover" }}
             />
           </div>
+        </div>
+      </section>
+      <section className="w-full py-6 md:py-12">
+        <h2 className="text-2xl mb-10 font-bold tracking-tighter sm:text-2xl md:text-3xl text-center">
+          Selecciona el tipo de entrada
+        </h2>
+        <div className="flex mx-auto align-center justify-center">
+          {evento?.ticketTypes && (
+            <TicketTypePicker tickets={evento?.ticketTypes} />
+          )}
         </div>
       </section>
     </>

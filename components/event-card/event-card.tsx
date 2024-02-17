@@ -11,8 +11,12 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import { TicketIcon } from "lucide-react";
 import Image from "next/image";
+import { formatDatesByMonth, groupDatesByMonth } from "@/lib/utils";
 
-export default function EventCard({ evento }: { evento: any }) {
+export default function EventCard({ evento }: { evento: Evento }) {
+  const parsedDates = JSON.parse(evento?.dates as string);
+  const groupedMonths = groupDatesByMonth(parsedDates);
+  const groupedDates = formatDatesByMonth(groupedMonths);
   return (
     <Link href={`eventos/${evento.id}`}>
       <Card className="rounded-lg shadow-md">
@@ -28,9 +32,10 @@ export default function EventCard({ evento }: { evento: any }) {
           <p className="text-sm uppercase font-medium tracking-wide text-gray-500 dark:text-gray-400">
             {evento.location}
           </p>
+          <p className="text-sm font-medium">{groupedDates}</p>
+
           <CardTitle>{evento.title}</CardTitle>
           <CardDescription>{evento.description}</CardDescription>
-          <p className="text-sm font-medium">April 18, 2023</p>
         </CardContent>
         <CardFooter className="flex justify-end gap-2 p-4">
           <Button className="w-full">

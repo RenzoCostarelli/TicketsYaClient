@@ -1,7 +1,5 @@
 import EventCard from "@/components/event-card/event-card";
 import { getAllEvents } from "@/lib/api/eventos";
-import { Evento } from "@/types/event";
-import Image from "next/image";
 
 export default async function Home() {
   const eventos = await getAllEvents();

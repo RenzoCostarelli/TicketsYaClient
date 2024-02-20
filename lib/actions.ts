@@ -1,6 +1,7 @@
 "use server";
 
 import * as Eventos from "@/lib/api/eventos";
+import * as Orders from "@/lib/api/orders";
 import * as TicketTypes from "@/lib/api/ticket-types";
 import { EventStatus } from "@/types/event";
 import { TicketType, UpdateTicketTypeType } from "@/types/tickets";
@@ -89,4 +90,20 @@ export async function updateTicketType(
   } catch (error) {
     console.log("Error editando el tipo de ticket:", error);
   }
+}
+
+export async function createOrder(ticketTypeId: string) {
+  console.log("ticketid", ticketTypeId);
+  try {
+    const result = await Orders.createOrder({
+      ticketTypeId: ticketTypeId,
+      status: "PENDING",
+    });
+    console.log("Order creada:", result);
+  } catch (error) {
+    console.log("Error creando la order:", error);
+    throw new Error("Error creando la order");
+  }
+
+  revalidatePath("/dashboard");
 }

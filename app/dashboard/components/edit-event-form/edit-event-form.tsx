@@ -44,6 +44,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import Link from "next/link";
+import { Label } from "@/components/ui/label";
 
 const formSchema = z.object({
   title: z.string().min(5, {
@@ -181,6 +182,7 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
               </FormItem>
             )}
           />
+          <Label>Fechas</Label>
           <DatesPicker
             dateTimeSelections={dateTimeSelections}
             onAddDateTime={handleAddDateTime}

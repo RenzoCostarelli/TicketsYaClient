@@ -9,7 +9,6 @@ export default async function Evento({ params }: { params: { id: string } }) {
   const parsedDates = JSON.parse(evento?.dates as string);
   const groupedMonths = groupDatesByMonth(parsedDates);
   const groupedDates = formatDatesByMonth(groupedMonths);
-  console.log("evento", evento);
   return (
     <>
       <section className="w-full py-6 md:py-12">

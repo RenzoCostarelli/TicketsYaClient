@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "@/components/ui/use-toast";
+import { createOrder } from "@/lib/actions";
 
 export type TicketType = {
   id: string;
@@ -54,14 +55,15 @@ export default function TicketTypePicker({ tickets }: { tickets: any }) {
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+    console.log("data", data);
+    createOrder(data.ticketType)
+      .then(() => {
+        form.reset();
+        alert("Order creada");
+      })
+      .catch((error) => {
+        console.log("error creando order", error);
+      });
   }
 
   return (

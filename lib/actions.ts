@@ -135,3 +135,15 @@ export async function getOrderById(orderId: string) {
     throw new Error("Error o");
   }
 }
+
+export async function updateOrder(data: any, orderId: string) {
+  console.log("data");
+  try {
+    const result = await Orders.updateOrder(orderId, data);
+    console.log("Order editada:", result);
+    // revalidatePath(`/dashboard/evento/${result.id}`);
+  } catch (error) {
+    console.log("Error editando la order:", error);
+    throw new Error("Error editando la order");
+  }
+}

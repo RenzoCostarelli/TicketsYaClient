@@ -15,6 +15,7 @@ import {
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { updateOrder } from "@/lib/actions";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -40,6 +41,15 @@ export default function UserDataForm({ orderId }: { orderId: string }) {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log("values", values);
+    updateOrder(
+      {
+        fullName: `${values.name} ${values.lastName}`,
+        phone: values.phone,
+        email: values.email,
+        status: "PAID",
+      },
+      orderId
+    );
   }
 
   return (

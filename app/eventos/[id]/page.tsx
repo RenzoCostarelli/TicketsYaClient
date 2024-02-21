@@ -47,7 +47,10 @@ export default async function Evento({ params }: { params: { id: string } }) {
         </h2>
         <div className="flex mx-auto align-center justify-center">
           {evento?.ticketTypes && (
-            <TicketTypePicker tickets={evento?.ticketTypes} />
+            <TicketTypePicker
+              tickets={evento?.ticketTypes}
+              eventId={evento?.id}
+            />
           )}
         </div>
       </section>

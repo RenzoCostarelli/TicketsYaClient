@@ -91,19 +91,37 @@ export async function updateTicketType(
     console.log("Error editando el tipo de ticket:", error);
   }
 }
+type CreateOrderType = {
+  ticketTypeId: string;
+  status: string;
+  quantity: number;
+  eventId: string;
+};
 
-export async function createOrder(ticketTypeId: string) {
-  console.log("ticketid", ticketTypeId);
+export async function createOrder(data: CreateOrderType) {
+  console.log("ticketid", data.ticketTypeId);
+  let orderId = null;
   try {
-    const result = await Orders.createOrder({
-      ticketTypeId: ticketTypeId,
-      status: "PENDING",
-    });
+    const result = await Orders.createOrder(data);
     console.log("Order creada:", result);
+    orderId = result.id;
   } catch (error) {
     console.log("Error creando la order:", error);
     throw new Error("Error creando la order");
   }
+  if (orderId) {
+    redirect(`/orders/${orderId}`);
+  }
 
   revalidatePath("/dashboard");
+}
+
+export async function getOrderById(orderId: string) {
+  try {
+    const result = await Orders.getOrderById(orderId);
+    return result;
+  } catch (error) {
+    console.log("Error en getEventById:", error);
+    throw new Error("Error o");
+  }
 }

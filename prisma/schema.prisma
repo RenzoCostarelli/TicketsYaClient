@@ -73,6 +73,7 @@ model Event {
   status      GlobalStatus
   userId      String
   ticketTypes TicketType[]
+  orders      Order[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @default(now())
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -118,14 +119,17 @@ model TicketType {
 model Order {
   id            String      @id @default(cuid())
   fullName      String?      
-  dni           String?      
+  dni           String?
+  email         String?  
   status        OrderStatus 
   ticketTypeId  String
-  quantity      Int    
+  eventId       String
+  quantity      Int
   ticketType    TicketType  @relation(fields: [ticketTypeId], references: [id], onDelete: Cascade)
+  event         Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @default(now())
-  qrCodes       QrCode[]   
+  tickets       TicketOrder[]   
 
   @@map("orders")
 }
@@ -137,19 +141,22 @@ enum OrderStatus {
   EXPIRED
 }
 
-model QrCode {
+model TicketOrder {
   id        String       @id @default(cuid())
+  fullName  String?      
+  dni       String?
+  email     String?  
   code      String       
   date      DateTime     
   orderId   String       
   order     Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  status    QrCodeStatus 
+  status    TicketOrderStatus 
   createdAt DateTime     @default(now())
 
-  @@map("qr_codes")
+  @@map("ticket_orders")
 }
 
-enum QrCodeStatus {
+enum TicketOrderStatus {
   VALIDATED
   NOT_VALIDATED
 }

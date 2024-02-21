@@ -67,6 +67,16 @@ export async function getTicketTypesByEventId(eventId: string) {
   }
 }
 
+export async function getTyicketTypeById(ticketTypeId: string) {
+  try {
+    const result = await TicketTypes.getTicketTypesById(ticketTypeId);
+    return result;
+  } catch (error) {
+    console.log("Error en getTicketTypesByEventId:", error);
+    throw new Error("Error en getTicketTypesByEventId");
+  }
+}
+
 export async function createTicketType(data: TicketType) {
   try {
     const result = await TicketTypes.createTicketType(data);

@@ -1,14 +1,13 @@
 import { getEventById } from "@/lib/actions";
 import Image from "next/image";
 import { CalendarIcon, MapPin } from "lucide-react";
-import { formatDatesByMonth, groupDatesByMonth } from "@/lib/utils";
+import { datesFormater } from "@/lib/utils";
 import TicketTypePicker from "@/components/ticket-type-picker/ticket-type-picker";
 
 export default async function Evento({ params }: { params: { id: string } }) {
   const evento = await getEventById(params.id);
-  const parsedDates = JSON.parse(evento?.dates as string);
-  const groupedMonths = groupDatesByMonth(parsedDates);
-  const groupedDates = formatDatesByMonth(groupedMonths);
+
+  const groupedDates = datesFormater(evento?.dates as string);
   return (
     <>
       <section className="w-full py-6 md:py-12">

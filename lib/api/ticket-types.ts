@@ -2,6 +2,13 @@ import { TicketType, UpdateTicketTypeType } from "@/types/tickets";
 import { Evento } from "../actions";
 import { db } from "../prisma";
 
+export async function getTicketTypesById(ticketTypeId: string) {
+  return await db.ticketType.findUnique({
+    where: {
+      id: ticketTypeId,
+    },
+  });
+}
 export async function getTicketTypesByEventId(eventId: string) {
   return await db.ticketType.findMany({
     where: {

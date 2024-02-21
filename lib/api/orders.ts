@@ -15,3 +15,13 @@ export async function getOrderById(orderId: string) {
     },
   });
 }
+
+// Crear type para order
+export async function updateOrder(orderId: string, orderData: any) {
+  return await db.order.update({
+    where: {
+      id: orderId,
+    },
+    data: orderData,
+  });
+}

@@ -1,16 +1,17 @@
-import { getEventById, getOrderById } from "@/lib/actions";
+import { getEventById, getOrderById, getTyicketTypeById } from "@/lib/actions";
 import Image from "next/image";
 import { CalendarIcon, MapPin } from "lucide-react";
-import { formatDatesByMonth, groupDatesByMonth } from "@/lib/utils";
+import { datesFormater } from "@/lib/utils";
 import TicketTypePicker from "@/components/ticket-type-picker/ticket-type-picker";
+import UserDataForm from "@/components/client-data-form/client-data-form";
 
 export default async function Evento({ params }: { params: { id: string } }) {
   const order = await getOrderById(params.id);
-  console.log("order", order);
+  const ticketType = await getTyicketTypeById(order?.ticketTypeId as string);
   const evento = order?.event;
-  const parsedDates = JSON.parse(evento?.dates as string);
-  const groupedMonths = groupDatesByMonth(parsedDates);
-  const groupedDates = formatDatesByMonth(groupedMonths);
+
+  const groupedEventDates = datesFormater(evento?.dates as string);
+  const groupedTicketDates = datesFormater(ticketType?.dates as string);
   return (
     <>
       <section className="w-full py-6 md:py-12">
@@ -22,7 +23,7 @@ export default async function Evento({ params }: { params: { id: string } }) {
               </h1>
               <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
                 <CalendarIcon className="w-4 h-4 flex-shrink-0" />
-                <span className="text-sm font-medium">{groupedDates}</span>
+                <span className="text-sm font-medium">{groupedEventDates}</span>
               </div>
               <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
                 <MapPin className="w-4 h-4 flex-shrink-0" />
@@ -45,9 +46,31 @@ export default async function Evento({ params }: { params: { id: string } }) {
       </section>
       <section className="w-full py-6 md:py-12">
         <h2 className="text-2xl mb-10 font-bold tracking-tighter sm:text-2xl md:text-3xl text-center">
-          Completa tus datos
+          Datos de tu orden
         </h2>
-        <div className="flex mx-auto align-center justify-center"></div>
+        <div className="flex mx-auto align-center justify-center gap-3 flex-col mx-auto max-w-md">
+          <div className="flex gap-4 justify-between">
+            <div className="item bg-gray-100 p-5 w-full">
+              {ticketType?.title} | {groupedTicketDates}
+            </div>
+            <div className="item bg-gray-100  p-5">{order?.quantity}</div>
+          </div>
+          <div className="item bg-gray-100  p-5">
+            TOTAL: ${ticketType?.price! * order?.quantity!}
+          </div>
+        </div>
+      </section>
+      <section className="w-full py-6 md:py-12">
+        <h2 className="text-2xl mb-10 font-bold tracking-tighter sm:text-2xl md:text-3xl text-center">
+          Tus datos
+        </h2>
+        <p className="mb-10 bg-gray-100 max-w-md p-10 mx-auto">
+          Una vez completados tus datos vas a poder realizar el pago. Vas a
+          recibir tus entradas a tu casilla de email
+        </p>
+        <div className="flex mx-auto align-center justify-center max-w-md bg-gray-100 p-5">
+          <UserDataForm orderId={order?.id as string} />
+        </div>
       </section>
     </>
   );

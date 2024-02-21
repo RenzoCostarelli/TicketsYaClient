@@ -29,3 +29,10 @@ export const formatDatesByMonth = (months: { [key: string]: number[] }) => {
     })
     .join(", ");
 };
+
+export const datesFormater = (dates: string) => {
+  const parsedDates = JSON.parse(dates);
+  const groupedMonths = groupDatesByMonth(parsedDates);
+  const groupedDates = formatDatesByMonth(groupedMonths);
+  return groupedDates;
+};

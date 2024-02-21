@@ -120,7 +120,8 @@ model Order {
   id            String      @id @default(cuid())
   fullName      String?      
   dni           String?
-  email         String?  
+  email         String?
+  phone         String?  
   status        OrderStatus 
   ticketTypeId  String
   eventId       String

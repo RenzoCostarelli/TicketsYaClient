@@ -36,7 +36,7 @@ const formSchema = z
   })
   .refine((data) => data.email === data.confirmEmail, {
     message: "Los correos electrónicos deben coincidir",
-    path: ["confirmEmail"], // Indica cuál campo mostrará el error
+    path: ["confirmEmail"],
   });
 
 export default function UserDataForm({ order }: { order: Order }) {
@@ -58,7 +58,8 @@ export default function UserDataForm({ order }: { order: Order }) {
     console.log("values", values);
     updateOrder(
       {
-        fullName: `${values.name} ${values.lastName}`,
+        name: values.name,
+        lastName: values.lastName,
         phone: values.phone,
         dni: values.dni,
         email: values.email,
@@ -160,7 +161,7 @@ export default function UserDataForm({ order }: { order: Order }) {
             name="confirmEmail"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>E-mail 2</FormLabel>
+                <FormLabel>Reingresar email</FormLabel>
                 <FormControl>
                   <Input placeholder="nombre@email.com" {...field} />
                 </FormControl>

@@ -61,22 +61,23 @@ enum GlobalStatus {
 }
 
 model Event {
-  id          String      @id @default(cuid())
-  title       String
-  description String
-  address    String
-  location    String
-  image       String?
-  dates       String?
-  startDate   DateTime?
-  endDate     DateTime?
-  status      GlobalStatus
-  userId      String
-  ticketTypes TicketType[]
-  orders      Order[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @default(now())
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id              String      @id @default(cuid())
+  title           String
+  description     String
+  address         String
+  location        String
+  image           String?
+  dates           String?
+  startDate       DateTime?
+  endDate         DateTime?
+  status          GlobalStatus
+  userId          String
+  ticketTypes     TicketType[]
+  orders          Order[]
+  validatorToken  ValidatorToken[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @default(now())
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("events")
 }
@@ -118,7 +119,8 @@ model TicketType {
 
 model Order {
   id            String      @id @default(cuid())
-  fullName      String?      
+  name          String?     
+  lastName      String? 
   dni           String?
   email         String?
   phone         String?  
@@ -144,7 +146,8 @@ enum OrderStatus {
 
 model TicketOrder {
   id        String       @id @default(cuid())
-  fullName  String?      
+  name      String?      
+  lastName  String?      
   dni       String?
   email     String?  
   code      String       
@@ -160,4 +163,13 @@ model TicketOrder {
 enum TicketOrderStatus {
   VALIDATED
   NOT_VALIDATED
+}
+
+model ValidatorToken {
+  id      String   @id @default(cuid())
+  token   String   @unique
+  eventId String   // Esto asume que cada token está relacionado con un evento específico
+  event   Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@map("validator_tokens")
 }

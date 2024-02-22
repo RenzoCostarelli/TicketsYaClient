@@ -1,7 +1,6 @@
 import { Evento } from "@/types/event";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
@@ -17,7 +16,6 @@ import {
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { datesFormater } from "@/lib/utils";
 
 export default function EventCard({ evento }: { evento: Evento }) {
   return (

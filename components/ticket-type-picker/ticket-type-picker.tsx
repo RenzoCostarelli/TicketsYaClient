@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "@/components/ui/use-toast";
 import { createOrder } from "@/lib/actions";
+import { datesFormater } from "@/lib/utils";
 
 export type TicketType = {
   id: string;
@@ -103,7 +104,8 @@ export default function TicketTypePicker({
                     <SelectContent>
                       {tickets.map((ticket: any) => (
                         <SelectItem value={ticket.id} key={ticket.id}>
-                          {ticket.title}
+                          {ticket.title} | {datesFormater(ticket.dates)} | $
+                          {ticket.price}
                         </SelectItem>
                       ))}
                     </SelectContent>

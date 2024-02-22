@@ -45,6 +45,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import Link from "next/link";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
 
 const formSchema = z.object({
   title: z.string().min(5, {
@@ -59,7 +60,8 @@ const formSchema = z.object({
 export default function EditEventForm({ evento }: { evento: Evento }) {
   const parsedDates = JSON.parse(evento.dates);
   const [dateTimeSelections, setDateTimeSelections] = useState(parsedDates);
-
+  const { toast } = useToast();
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -113,10 +115,16 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
     )
       .then(() => {
         form.reset();
-        alert("Evento editado");
+        toast({
+          title: "Evento editado!",
+        });
       })
       .catch((error) => {
         console.log("error editando el evento", error);
+        toast({
+          variant: "destructive",
+          title: "Error editando el evento",
+        });
       });
   }
 

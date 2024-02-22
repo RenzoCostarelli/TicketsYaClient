@@ -20,6 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
 
 const formSchema = z.object({
   title: z.string().min(5, {
@@ -35,6 +36,8 @@ export default function CreateEventForm({ userId }: { userId: string }) {
   const [dateTimeSelections, setDateTimeSelections] = useState([
     { id: 0, date: new Date().toISOString().slice(0, 16) },
   ]);
+  const { toast } = useToast();
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -85,10 +88,16 @@ export default function CreateEventForm({ userId }: { userId: string }) {
     })
       .then(() => {
         form.reset();
-        alert("Evento creado");
+        toast({
+          title: "Evento creado!",
+        });
       })
       .catch((error) => {
         console.log("error creando evento", error);
+        toast({
+          variant: "destructive",
+          title: "error creando evento",
+        });
       });
   }
 

@@ -15,12 +15,13 @@ import Link from "next/link";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { getUserByEmail } from "@/lib/api/users";
 import EventCard from "./components/event-card/event-card";
+import { DashboardCard } from "@/types/card";
 
 export default async function Dashboard() {
   const session = await getServerSession(authOptions);
   const { id } = await getUserByEmail(session?.user?.email as string);
   const eventos = await getEventsByUserId(id);
-
+  
   return (
     <>
       {/* <nav className="w-full max-w-md flex justify-around mb-8">
@@ -69,7 +70,7 @@ export default async function Dashboard() {
           </Select>
         </div>
         {eventos &&
-          eventos.map((evento: any) => (
+          eventos.map((evento: DashboardCard) => (
             <EventCard evento={evento} key={evento.id} />
           ))}
       </div>

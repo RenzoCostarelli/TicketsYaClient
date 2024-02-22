@@ -14,13 +14,13 @@ import Image from "next/image";
 import { datesFormater } from "@/lib/utils";
 
 export default function EventCard({ evento }: { evento: HomeCard }) {
-  const groupedDates = datesFormater(evento?.dates as string);
+  const groupedDates = datesFormater(evento.dates as string);
   return (
     <Link href={`eventos/${evento.id}`}>
       <Card className="rounded-lg shadow-md">
         <div className="aspect-[16/9] relative">
           <Image
-            src={evento?.image || ""}
+            src={evento.image || ''}
             alt="text"
             fill
             style={{ objectFit: "cover" }}

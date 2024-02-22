@@ -80,35 +80,40 @@ export default function TicketTypePicker({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6 ">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="w-1/2 space-y-6 p-3 bg-gray-100"
+      >
         <div className="flex gap-2">
-          <FormField
-            control={form.control}
-            name="ticketType"
-            render={({ field }) => (
-              <FormItem>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Seleccionar tipo de ticket" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {tickets.map((ticket: any) => (
-                      <SelectItem value={ticket.id} key={ticket.id}>
-                        {ticket.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+          <div className="w-full">
+            <FormField
+              control={form.control}
+              name="ticketType"
+              render={({ field }) => (
+                <FormItem>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccionar tipo de ticket" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {tickets.map((ticket: any) => (
+                        <SelectItem value={ticket.id} key={ticket.id}>
+                          {ticket.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
 
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
           <FormField
             control={form.control}
             name="quantity"
@@ -142,7 +147,9 @@ export default function TicketTypePicker({
             )}
           />
         </div>
-        <Button type="submit">Comprar</Button>
+        <Button className="w-full" type="submit">
+          Comprar
+        </Button>
       </form>
     </Form>
   );

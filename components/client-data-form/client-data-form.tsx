@@ -24,8 +24,13 @@ const formSchema = z.object({
   lastName: z.string().min(2, {
     message: "Debe tener al menos 2 caracteres",
   }),
-  email: z.string().email().min(5, { message: "Debe ser un email valido" }),
+  email: z.string().email().min(5, { message: "Debe ser un email válido" }),
+  confirmEmail: z.string().email().min(5, { message: "Debe ser un email válido" }),
   phone: z.string(),
+  dni: z.string().min(8, { message: "Debe ser un dni válido" }),
+}).refine((data) => data.email === data.confirmEmail, {
+  message: "Los correos electrónicos deben coincidir",
+  path: ["confirmEmail"], // Indica cuál campo mostrará el error
 });
 
 export default function UserDataForm({ orderId }: { orderId: string }) {
@@ -36,6 +41,7 @@ export default function UserDataForm({ orderId }: { orderId: string }) {
       lastName: "",
       email: "",
       phone: "",
+      dni: "",
     },
   });
 
@@ -45,6 +51,7 @@ export default function UserDataForm({ orderId }: { orderId: string }) {
       {
         fullName: `${values.name} ${values.lastName}`,
         phone: values.phone,
+        dni: values.dni,
         email: values.email,
         status: "PAID",
       },
@@ -89,6 +96,21 @@ export default function UserDataForm({ orderId }: { orderId: string }) {
 
         <FormField
           control={form.control}
+          name="dni"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>DNI</FormLabel>
+              <FormControl>
+                <Input placeholder="Dni" {...field} />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="phone"
           render={({ field }) => (
             <FormItem>
@@ -107,6 +129,19 @@ export default function UserDataForm({ orderId }: { orderId: string }) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>E-mail</FormLabel>
+              <FormControl>
+                <Input placeholder="nombre@email.com" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="confirmEmail"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>E-mail 2</FormLabel>
               <FormControl>
                 <Input placeholder="nombre@email.com" {...field} />
               </FormControl>

@@ -1,4 +1,4 @@
-import { Evento } from "@/types/event";
+import { DashboardCard } from "@/types/card";
 import {
   Card,
   CardDescription,
@@ -17,7 +17,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
-export default function EventCard({ evento }: { evento: Evento }) {
+export default function EventCard({ evento }: { evento: DashboardCard }) {
   return (
     <>
       <Card className="w-full max-w-xl" key={evento.id}>

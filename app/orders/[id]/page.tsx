@@ -14,7 +14,7 @@ export default async function Evento({ params }: { params: { id: string } }) {
   const groupedEventDates = datesFormater(evento?.dates as string);
   const groupedTicketDates = datesFormater(ticketType?.dates as string);
 
-  if (order?.status === "EXPIRED") {
+  if (order?.status === "EXPIRED" || order?.status === "PAID") {
     return (
       <section className="w-full py-6 md:py-12">
         <h2 className="text-2xl mb-10 font-bold tracking-tighter sm:text-2xl md:text-3xl text-center">

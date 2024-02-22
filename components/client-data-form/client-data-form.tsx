@@ -41,6 +41,7 @@ export default function UserDataForm({ orderId }: { orderId: string }) {
       lastName: "",
       email: "",
       phone: "",
+      confirmEmail: "",
       dni: "",
     },
   });
@@ -52,7 +53,7 @@ export default function UserDataForm({ orderId }: { orderId: string }) {
         fullName: `${values.name} ${values.lastName}`,
         phone: values.phone,
         dni: values.dni,
-        email: values.email,
+        email: values.email,        
         status: "PAID",
       },
       orderId

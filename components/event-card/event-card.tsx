@@ -1,4 +1,4 @@
-import { Evento } from "@/types/event";
+import { HomeCard } from "@/types/card";
 import {
   Card,
   CardContent,
@@ -13,7 +13,7 @@ import { TicketIcon } from "lucide-react";
 import Image from "next/image";
 import { datesFormater } from "@/lib/utils";
 
-export default function EventCard({ evento }: { evento: Evento }) {
+export default function EventCard({ evento }: { evento: HomeCard }) {
   const groupedDates = datesFormater(evento?.dates as string);
   return (
     <Link href={`eventos/${evento.id}`}>

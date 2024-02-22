@@ -15,6 +15,7 @@ import { datesFormater } from "@/lib/utils";
 
 export default function EventCard({ evento }: { evento: HomeCard }) {
   const groupedDates = datesFormater(evento.dates as string);
+
   return (
     <Link href={`eventos/${evento.id}`}>
       <Card className="rounded-lg shadow-md">

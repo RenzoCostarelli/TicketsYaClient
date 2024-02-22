@@ -23,7 +23,7 @@ export default function EventCard({ evento }: { evento: DashboardCard }) {
       <Card className="w-full max-w-xl" key={evento.id}>
         <CardHeader className="flex flex-row items-center gap-2">
           <Image
-            src={evento.image || ""}
+            src={evento.image || ''}
             alt="text"
             width={100}
             height={100}

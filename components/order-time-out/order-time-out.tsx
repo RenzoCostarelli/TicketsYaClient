@@ -4,33 +4,33 @@ import { Order } from "@/types/order";
 import { useCallback, useEffect, useState } from "react";
 
 export default function OrderTimeOut({ order }: { order: Order }) {
-  const [isExpired, setIsExpired] = useState<boolean>(false);
-  const orderCreatedDate = order.createdAt;
+  const [timeLeft, setTimeLeft] = useState<number>(0);
+  const [isClientSide, setIsClientSide] = useState<boolean>(false);
   const orderId = order.id;
 
   const calculateTimeLeft = useCallback(() => {
-    const fifteenMinutes = 4 * 60 * 1000;
-    const deadline = new Date(orderCreatedDate.getTime() + fifteenMinutes);
-    const now = new Date();
-    const timeLeft = deadline.getTime() - now.getTime();
+    const fifteenMinutes = 15 * 60 * 1000;
+    const deadline = new Date(order.createdAt).getTime() + fifteenMinutes;
+    const now = new Date().getTime();
+    const timeLeft = deadline - now;
 
-    if (
-      Math.max(Math.floor(timeLeft / 1000), 0) <= 0 &&
-      order.status !== "EXPIRED"
-    ) {
-      updateOrder(
-        {
-          status: "EXPIRED",
-        },
-        orderId as string
-      );
+    if (timeLeft <= 0) {
+      if (order.status === "PENDING") {
+        updateOrder({ status: "EXPIRED" }, orderId as string);
+      }
+      return 0;
     }
     return Math.max(Math.floor(timeLeft / 1000), 0);
-  }, [orderCreatedDate, orderId, order.status]); // Añade aquí todas las dependencias externas de la función
-
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+  }, [order.createdAt, order.status, orderId]);
 
   useEffect(() => {
+    setIsClientSide(true);
+    setTimeLeft(calculateTimeLeft());
+  }, [calculateTimeLeft]);
+
+  useEffect(() => {
+    if (!isClientSide) return;
+
     const timer = setInterval(() => {
       const newTimeLeft = calculateTimeLeft();
       setTimeLeft(newTimeLeft);
@@ -41,7 +41,7 @@ export default function OrderTimeOut({ order }: { order: Order }) {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [calculateTimeLeft]); // Ahora `calculateTimeLeft` es estable entre renderizados
+  }, [isClientSide, calculateTimeLeft]);
 
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
@@ -49,5 +49,16 @@ export default function OrderTimeOut({ order }: { order: Order }) {
     .toString()
     .padStart(2, "0")}`;
 
-  return <span>{formattedTime}</span>;
+  // RARO ESTO
+  if (!isClientSide) {
+    return <span>Cargando...</span>;
+  }
+
+  return (
+    <div className="flex max-2-md mx-auto justify-center">
+      <h5>
+        Tu orden expira en:<span className="font-bold"> {formattedTime}</span>
+      </h5>
+    </div>
+  );
 }

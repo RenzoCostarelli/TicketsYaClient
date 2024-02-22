@@ -14,6 +14,16 @@ export default async function Evento({ params }: { params: { id: string } }) {
   const groupedEventDates = datesFormater(evento?.dates as string);
   const groupedTicketDates = datesFormater(ticketType?.dates as string);
 
+  if (order?.status === "EXPIRED") {
+    return (
+      <section className="w-full py-6 md:py-12">
+        <h2 className="text-2xl mb-10 font-bold tracking-tighter sm:text-2xl md:text-3xl text-center">
+          Orden vencida
+        </h2>
+      </section>
+    );
+  }
+
   return (
     <>
       <section className="w-full py-6 md:py-12">
@@ -46,6 +56,7 @@ export default async function Evento({ params }: { params: { id: string } }) {
           </div>
         </div>
       </section>
+
       <OrderTimeOut order={order as Order} />
       <section className="w-full py-6 md:py-12">
         <h2 className="text-2xl mb-10 font-bold tracking-tighter sm:text-2xl md:text-3xl text-center">

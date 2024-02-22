@@ -133,7 +133,7 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit((values) => onSubmit(values))}
-          className="space-y-8"
+          className="space-y-8 w-[100%]"
         >
           <FormField
             control={form.control}

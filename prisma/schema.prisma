@@ -91,7 +91,7 @@ enum TicketTypeStatus {
   ACTIVE
   INACTIVE
   ENDED
-  REMOVED
+  DELETED
 }
 
 model TicketType {

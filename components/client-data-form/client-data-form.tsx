@@ -68,6 +68,15 @@ export default function UserDataForm({ order }: { order: Order }) {
     );
   }
 
+  function expire() {
+    updateOrder(
+      {
+        status: "EXPIRED",
+      },
+      orderId as string
+    );
+  }
+
   return (
     <>
       <Form {...form}>

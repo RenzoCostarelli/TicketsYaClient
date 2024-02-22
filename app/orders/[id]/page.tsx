@@ -1,9 +1,10 @@
-import { getEventById, getOrderById, getTyicketTypeById } from "@/lib/actions";
+import { getOrderById, getTyicketTypeById } from "@/lib/actions";
 import Image from "next/image";
 import { CalendarIcon, MapPin } from "lucide-react";
 import { datesFormater } from "@/lib/utils";
-import TicketTypePicker from "@/components/ticket-type-picker/ticket-type-picker";
 import UserDataForm from "@/components/client-data-form/client-data-form";
+import { Order } from "@/types/order";
+import OrderTimeOut from "@/components/order-time-out/order-time-out";
 
 export default async function Evento({ params }: { params: { id: string } }) {
   const order = await getOrderById(params.id);
@@ -12,6 +13,17 @@ export default async function Evento({ params }: { params: { id: string } }) {
 
   const groupedEventDates = datesFormater(evento?.dates as string);
   const groupedTicketDates = datesFormater(ticketType?.dates as string);
+
+  if (order?.status === "EXPIRED") {
+    return (
+      <section className="w-full py-6 md:py-12">
+        <h2 className="text-2xl mb-10 font-bold tracking-tighter sm:text-2xl md:text-3xl text-center">
+          Orden vencida
+        </h2>
+      </section>
+    );
+  }
+
   return (
     <>
       <section className="w-full py-6 md:py-12">
@@ -44,6 +56,8 @@ export default async function Evento({ params }: { params: { id: string } }) {
           </div>
         </div>
       </section>
+
+      <OrderTimeOut order={order as Order} />
       <section className="w-full py-6 md:py-12">
         <h2 className="text-2xl mb-10 font-bold tracking-tighter sm:text-2xl md:text-3xl text-center">
           Datos de tu orden
@@ -69,7 +83,7 @@ export default async function Evento({ params }: { params: { id: string } }) {
           recibir tus entradas a tu casilla de email
         </p>
         <div className="flex mx-auto align-center justify-center max-w-md bg-gray-100 p-5">
-          <UserDataForm orderId={order?.id as string} />
+          <UserDataForm order={order as Order} />
         </div>
       </section>
     </>

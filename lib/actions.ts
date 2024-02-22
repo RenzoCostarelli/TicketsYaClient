@@ -141,7 +141,7 @@ export async function updateOrder(data: any, orderId: string) {
   try {
     const result = await Orders.updateOrder(orderId, data);
     console.log("Order editada:", result);
-    // revalidatePath(`/dashboard/evento/${result.id}`);
+    revalidatePath(`/orders/${result.id}`);
   } catch (error) {
     console.log("Error editando la order:", error);
     throw new Error("Error editando la order");

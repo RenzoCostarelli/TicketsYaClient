@@ -16,24 +16,32 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { updateOrder } from "@/lib/actions";
+import { Order } from "@/types/order";
 
-const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "Debe tener al menos 2 caracteres",
-  }),
-  lastName: z.string().min(2, {
-    message: "Debe tener al menos 2 caracteres",
-  }),
-  email: z.string().email().min(5, { message: "Debe ser un email válido" }),
-  confirmEmail: z.string().email().min(5, { message: "Debe ser un email válido" }),
-  phone: z.string(),
-  dni: z.string().min(8, { message: "Debe ser un dni válido" }),
-}).refine((data) => data.email === data.confirmEmail, {
-  message: "Los correos electrónicos deben coincidir",
-  path: ["confirmEmail"], // Indica cuál campo mostrará el error
-});
+const formSchema = z
+  .object({
+    name: z.string().min(2, {
+      message: "Debe tener al menos 2 caracteres",
+    }),
+    lastName: z.string().min(2, {
+      message: "Debe tener al menos 2 caracteres",
+    }),
+    email: z.string().email().min(5, { message: "Debe ser un email válido" }),
+    confirmEmail: z
+      .string()
+      .email()
+      .min(5, { message: "Debe ser un email válido" }),
+    phone: z.string(),
+    dni: z.string().min(8, { message: "Debe ser un dni válido" }),
+  })
+  .refine((data) => data.email === data.confirmEmail, {
+    message: "Los correos electrónicos deben coincidir",
+    path: ["confirmEmail"], // Indica cuál campo mostrará el error
+  });
 
-export default function UserDataForm({ orderId }: { orderId: string }) {
+export default function UserDataForm({ order }: { order: Order }) {
+  const orderId = order?.id;
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -53,28 +61,86 @@ export default function UserDataForm({ orderId }: { orderId: string }) {
         fullName: `${values.name} ${values.lastName}`,
         phone: values.phone,
         dni: values.dni,
-        email: values.email,        
+        email: values.email,
         status: "PAID",
       },
-      orderId
+      orderId as string
     );
   }
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit((values) => onSubmit(values))}
-        className="space-y-8 w-[100%]"
-      >
-        <div className="flex gap-3">
+    <>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit((values) => onSubmit(values))}
+          className="space-y-8 w-[100%]"
+        >
+          <div className="flex gap-3">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nombre</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Nombre" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="lastName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Apellido</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Apellido" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
           <FormField
             control={form.control}
-            name="name"
+            name="dni"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nombre</FormLabel>
+                <FormLabel>DNI</FormLabel>
                 <FormControl>
-                  <Input placeholder="Nombre" {...field} />
+                  <Input placeholder="Dni" {...field} />
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Telefono</FormLabel>
+                <FormControl>
+                  <Input placeholder="Telefono" {...field} />
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>E-mail</FormLabel>
+                <FormControl>
+                  <Input placeholder="nombre@email.com" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -82,79 +148,23 @@ export default function UserDataForm({ orderId }: { orderId: string }) {
           />
           <FormField
             control={form.control}
-            name="lastName"
+            name="confirmEmail"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Apellido</FormLabel>
+                <FormLabel>E-mail 2</FormLabel>
                 <FormControl>
-                  <Input placeholder="Apellido" {...field} />
+                  <Input placeholder="nombre@email.com" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-        </div>
 
-        <FormField
-          control={form.control}
-          name="dni"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>DNI</FormLabel>
-              <FormControl>
-                <Input placeholder="Dni" {...field} />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="phone"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Telefono</FormLabel>
-              <FormControl>
-                <Input placeholder="Telefono" {...field} />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>E-mail</FormLabel>
-              <FormControl>
-                <Input placeholder="nombre@email.com" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="confirmEmail"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>E-mail 2</FormLabel>
-              <FormControl>
-                <Input placeholder="nombre@email.com" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <Button className="w-full" type="submit">
-          Pagar
-        </Button>
-      </form>
-    </Form>
+          <Button className="w-full" type="submit">
+            Pagar
+          </Button>
+        </form>
+      </Form>
+    </>
   );
 }

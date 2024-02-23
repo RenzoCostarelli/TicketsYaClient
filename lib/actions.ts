@@ -7,6 +7,7 @@ import { EventStatus } from "@/types/event";
 import { TicketType, UpdateTicketTypeType } from "@/types/tickets";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { POST } from "@/lib/api/sendEmail";
 // Type temporal
 export type Evento = {
   title: string;
@@ -150,10 +151,10 @@ export async function getOrderById(orderId: string) {
 }
 
 export async function updateOrder(data: any, orderId: string) {
-  console.log("data");
+  //console.log("data");
   try {
     const result = await Orders.updateOrder(orderId, data);
-    console.log("Order editada:", result);
+    const response = await POST(result)
     revalidatePath(`/orders/${result.id}`);
   } catch (error) {
     console.log("Error editando la order:", error);

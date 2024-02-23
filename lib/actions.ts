@@ -47,6 +47,19 @@ export async function updateEvent(data: Evento, eventId: string) {
   }
 }
 
+export async function deleteEvent(eventId: string) {
+  try {
+    const data = { status : "DELETED"}
+    const result = await Eventos.updateEvent(eventId, data as Evento);
+
+    revalidatePath(`/dashboard`);
+    return result;
+  } catch (error) {
+    console.log("Error borrando el evento:", error);
+    throw new Error("Error editando el evento");
+  }
+}
+
 export async function getEventById(eventId: string) {
   try {
     const result = await Eventos.getEventById(eventId);

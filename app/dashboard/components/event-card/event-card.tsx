@@ -1,4 +1,5 @@
-import { DashboardCard } from "@/types/card";
+"use client"
+
 import {
   Card,
   CardDescription,
@@ -16,14 +17,34 @@ import {
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { Evento } from "@/types/event";
+import { deleteEvent } from "@/lib/actions";
+import { toast } from "@/components/ui/use-toast";
 
-export default function EventCard({ evento }: { evento: DashboardCard }) {
+export default function EventCard({ evento  }: { evento: Evento }) {
+  
+  const handleDeleteEvent = () => {
+    deleteEvent(evento.id)
+      .then(() => {
+        toast({
+          title: "Evento borrado!",
+        });
+      })
+      .catch((error: string) => {
+        console.log("error editando el evento", error);
+        toast({
+          variant: "destructive",
+          title: "Error editando el evento",
+        });
+      });
+  };
+
   return (
     <>
       <Card className="w-full max-w-xl" key={evento.id}>
         <CardHeader className="flex flex-row items-center gap-2">
           <Image
-            src={evento.image || ''}
+            src={evento.image || ""}
             alt="text"
             width={100}
             height={100}
@@ -51,9 +72,14 @@ export default function EventCard({ evento }: { evento: DashboardCard }) {
             <KeyIcon className="w-6 h-6" />
             <span className="sr-only">Key</span>
           </Button>
-          <Button className="text-red-500" size="icon" variant="ghost">
+          <Button
+            className="text-red-500"
+            size="icon"
+            variant="ghost"
+            onClick={handleDeleteEvent}
+          >
             <TrashIcon className="w-6 h-6" />
-            <span className="sr-only">Eliminar</span>
+            <span className="sr-only"> Eliminar </span>
           </Button>
         </CardFooter>
       </Card>

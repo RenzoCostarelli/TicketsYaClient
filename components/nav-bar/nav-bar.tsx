@@ -56,7 +56,13 @@ export default function NavBar() {
             <DropdownMenuLabel>{session.user?.name}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link href={"/dashboard"}>Dashboard</Link>
+              <Link href={"/dashboard/perfil"}>Perfil</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link href={"/dashboard"}>Panel</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link href={"/dashboard/integraciones"}>Integraciones</Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>

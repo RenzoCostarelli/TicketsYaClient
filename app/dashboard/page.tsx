@@ -15,7 +15,7 @@ import Link from "next/link";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { getUserByEmail } from "@/lib/api/users";
 import EventCard from "./components/event-card/event-card";
-import { DashboardCard } from "@/types/card";
+import { Evento } from "@/types/event";
 
 export default async function Dashboard() {
   const session = await getServerSession(authOptions);
@@ -70,8 +70,8 @@ export default async function Dashboard() {
           </Select>
         </div>
         {eventos &&
-          eventos.map((evento: DashboardCard) => (
-            <EventCard evento={evento} key={evento.id} />
+          eventos.map((evento) => (
+            <EventCard evento={evento as Evento} key={evento.id} />
           ))}
       </div>
     </>

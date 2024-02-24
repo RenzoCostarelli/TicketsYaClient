@@ -3,6 +3,7 @@
 import * as Eventos from "@/lib/api/eventos";
 import * as Orders from "@/lib/api/orders";
 import * as TicketTypes from "@/lib/api/ticket-types";
+import * as Users from "@/lib/api/users";
 import { EventStatus } from "@/types/event";
 import { TicketType, UpdateTicketTypeType } from "@/types/tickets";
 import { revalidatePath } from "next/cache";
@@ -145,5 +146,16 @@ export async function updateOrder(data: any, orderId: string) {
   } catch (error) {
     console.log("Error editando la order:", error);
     throw new Error("Error editando la order");
+  }
+}
+
+export async function updateUser(data: any, userEmail: string) {
+  try {
+    const result = await Users.updateUser(data, userEmail);
+    console.log("Usuario editado:", result);
+    revalidatePath(`/dashboard/evento/${result.id}`);
+  } catch (error) {
+    console.log("Error editando el usuario:", error);
+    throw new Error("Error editando el usuario");
   }
 }

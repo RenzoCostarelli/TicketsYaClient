@@ -7,3 +7,13 @@ export async function getUserByEmail(email: string) {
     },
   });
 }
+
+export async function updateUser(data: any, email: string) {
+  const { id } = await getUserByEmail(email as string);
+  return await db.user.update({
+    where: {
+      id,
+    },
+    data,
+  });
+}

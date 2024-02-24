@@ -1,4 +1,4 @@
-type TicketTypeStatus = "ACTIVE" | "INACTIVE" | "ENDED" | "REMOVED";
+type TicketTypeStatus = "ACTIVE" | "INACTIVE" | "ENDED" | "DELETED";
 
 type TicketTypes = "NORMAL" | "ABONO" | "PROMO";
 

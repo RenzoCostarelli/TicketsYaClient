@@ -10,17 +10,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+
 import { toast } from "@/components/ui/use-toast";
-import { cn } from "@/lib/utils";
+import { updateUser } from "@/lib/actions";
+import { User } from "@/types/user";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useForm, useFieldArray } from "react-hook-form";
 import { z } from "zod";
@@ -34,28 +29,33 @@ const profileFormSchema = z.object({
   }),
 });
 
-type ProfileFormValues = z.infer<typeof profileFormSchema>;
+type MpFormValues = z.infer<typeof profileFormSchema>;
 
-const defaultValues: Partial<ProfileFormValues> = {
-  mpPublicKey: "",
-  mpAccessToken: "",
-};
-export default function MercadoPagoForm() {
-  const form = useForm<ProfileFormValues>({
+export default function MercadoPagoForm({ user }: { user: User }) {
+  const defaultValues: Partial<MpFormValues> = {
+    mpPublicKey: user.mpPublicKey as string | "",
+    mpAccessToken: user.mpPublicKey as string | "",
+  };
+  const form = useForm<MpFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues,
     mode: "onChange",
   });
 
-  function onSubmit(data: ProfileFormValues) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+  function onSubmit(values: MpFormValues) {
+    try {
+      updateUser(
+        {
+          mpAccessToken: values.mpAccessToken,
+          mpPublicKey: values.mpPublicKey,
+        },
+        user?.email as string
+      );
+
+      toast({
+        title: "Datos de mercadopago actualizados",
+      });
+    } catch (error) {}
   }
 
   return (

@@ -22,12 +22,6 @@ export default function NavBar() {
         <span className="sr-only">Mega Archi ticket Inc</span>
       </Link>
       <nav className="ml-auto flex gap-4 sm:gap-6">
-        {/* <Link
-          className="text-sm font-medium hover:underline underline-offset-4 hover:text-green-500"
-          href="#"
-        >
-          Eventos
-        </Link> */}
         <Link
           className="text-sm font-medium hover:underline underline-offset-4 hover:text-green-500"
           href="#"
@@ -48,7 +42,7 @@ export default function NavBar() {
           <DropdownMenuTrigger asChild>
             <Avatar className="h-9 w-9 ml-4 cursor-pointer">
               <AvatarImage alt="@shadcn" src={session.user?.image as string} />
-              <AvatarFallback>JP</AvatarFallback>
+              <AvatarFallback>{session.user?.name?.charAt(0)}</AvatarFallback>
               <span className="sr-only">Desplegar menú de usuario</span>
             </Avatar>
           </DropdownMenuTrigger>

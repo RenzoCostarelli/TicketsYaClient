@@ -5,7 +5,9 @@ import * as Orders from "@/lib/api/orders";
 import * as TicketTypes from "@/lib/api/ticket-types";
 import * as Users from "@/lib/api/users";
 import { EventStatus } from "@/types/event";
+import { Product } from "@/types/product";
 import { TicketType, UpdateTicketTypeType } from "@/types/tickets";
+import MercadoPagoConfig, { Preference } from "mercadopago";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 // Type temporal
@@ -158,4 +160,51 @@ export async function updateUser(data: any, userEmail: string) {
     console.log("Error editando el usuario:", error);
     throw new Error("Error editando el usuario");
   }
+}
+const client = new MercadoPagoConfig({
+  accessToken: process.env.MP_ACCESS_TOKEN!,
+});
+export async function getMercadPagoUrl(product: any) {
+  // Cambiar type de product y ademas pedir la data del form para updatear la order
+  let preference = null;
+  try {
+    preference = await new Preference(client).create({
+      body: {
+        items: [
+          {
+            // id: `${product.title}-${Math.floor(Math.random() * 100000)}`,
+            // title: product.title,
+            // unit_price: product.price,
+            // quantity: 1,
+            id: `id del producto`,
+            title: "titulo",
+            unit_price: 2000,
+            quantity: 1,
+          },
+        ],
+        // external_reference: product.orderId,
+        auto_return: "approved",
+        back_urls: {
+          success: `http://localhost:3000/`,
+          failure: `http://localhost:3000/`,
+        },
+        notification_url: `http://localhost:3000/api/mpNotify`,
+      },
+    });
+  } catch (error) {
+    console.error("error", error);
+  }
+
+  if (preference) {
+    redirect(preference.sandbox_init_point!);
+  }
+  // try {
+  //   const result = await fetch("http://localhost:3000/api/mercado-pago", {
+  //     method: "POST",
+  //     body: JSON.stringify({ product }),
+  //   });
+  //   console.log("result", result);
+  // } catch (error) {
+  //   console.log(error);
+  // }
 }

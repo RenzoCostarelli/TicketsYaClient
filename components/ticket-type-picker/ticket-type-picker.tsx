@@ -25,6 +25,7 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { createOrder } from "@/lib/actions";
 import { datesFormater } from "@/lib/utils";
+import MpButtonServer from "../mp-button/mp-button-server";
 
 export type TicketType = {
   id: string;

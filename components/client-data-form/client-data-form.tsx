@@ -15,7 +15,7 @@ import {
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { updateOrder } from "@/lib/actions";
+import { getMercadPagoUrl, updateOrder } from "@/lib/actions";
 import { Order } from "@/types/order";
 
 const formSchema = z
@@ -54,19 +54,24 @@ export default function UserDataForm({ order }: { order: Order }) {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log("values", values);
-    updateOrder(
-      {
-        name: values.name,
-        lastName: values.lastName,
-        phone: values.phone,
-        dni: values.dni,
-        email: values.email,
-        status: "PAID",
-      },
-      orderId as string
-    );
+    try {
+      const mpResponse = await getMercadPagoUrl(values);
+    } catch (error) {
+      console.log("error mercadopago", error);
+    }
+    // updateOrder(
+    //   {
+    //     name: values.name,
+    //     lastName: values.lastName,
+    //     phone: values.phone,
+    //     dni: values.dni,
+    //     email: values.email,
+    //     status: "PAID",
+    //   },
+    //   orderId as string
+    // );
   }
 
   function expire() {

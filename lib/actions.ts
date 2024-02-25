@@ -140,7 +140,6 @@ export async function getOrderById(orderId: string) {
 }
 
 export async function updateOrder(data: any, orderId: string) {
-  console.log("data");
   try {
     const result = await Orders.updateOrder(orderId, data);
     console.log("Order editada:", result);
@@ -161,12 +160,33 @@ export async function updateUser(data: any, userEmail: string) {
     throw new Error("Error editando el usuario");
   }
 }
-const client = new MercadoPagoConfig({
-  accessToken: process.env.MP_ACCESS_TOKEN!,
-});
-export async function getMercadPagoUrl(product: any) {
+
+export async function getMercadoPagoTokenByUser(userId: string) {
+  try {
+    const result = await Users.getUserById(userId);
+    console.log(result);
+    return result.mpAccessToken;
+  } catch (error) {}
+}
+
+export async function getMercadPagoUrl(
+  product: any,
+  orderData: any,
+  orderId: string,
+  userId: string
+) {
   // Cambiar type de product y ademas pedir la data del form para updatear la order
+  console.log(orderData);
+  updateOrder(orderData, orderId);
   let preference = null;
+  const MP_ACCESS_TOKEN = await getMercadoPagoTokenByUser(userId);
+  console.log("token", MP_ACCESS_TOKEN);
+  const client = new MercadoPagoConfig({
+    accessToken: MP_ACCESS_TOKEN!,
+  });
+
+  const siteUrl =
+    "https://78b0-2803-9800-98c4-84d9-74f0-4336-1ad8-3044.ngrok-free.app";
   try {
     preference = await new Preference(client).create({
       body: {
@@ -185,10 +205,10 @@ export async function getMercadPagoUrl(product: any) {
         // external_reference: product.orderId,
         auto_return: "approved",
         back_urls: {
-          success: `http://localhost:3000/`,
-          failure: `http://localhost:3000/`,
+          success: `${siteUrl}/`,
+          failure: `${siteUrl}/`,
         },
-        notification_url: `http://localhost:3000/api/mpNotify`,
+        notification_url: `${siteUrl}/api/mp-notify`,
       },
     });
   } catch (error) {

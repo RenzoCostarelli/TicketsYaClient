@@ -1,3 +1,5 @@
+import { Evento } from "./event";
+
 export interface Order {
   id?: string;
   fullName?: string;
@@ -8,4 +10,5 @@ export interface Order {
   ticketTypeId: string;
   eventId: string;
   createdAt: Date;
+  event?: Evento;
 }

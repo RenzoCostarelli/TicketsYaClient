@@ -64,7 +64,6 @@ export default function TicketTypePicker({
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log("data", data);
     const orderData = {
       ticketTypeId: data.ticketType,
       status: "PENDING",

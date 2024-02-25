@@ -41,7 +41,7 @@ const formSchema = z
 
 export default function UserDataForm({ order }: { order: Order }) {
   const orderId = order?.id;
-
+  const userId = order?.event!.userId;
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -56,8 +56,21 @@ export default function UserDataForm({ order }: { order: Order }) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log("values", values);
+    const orderData = {
+      name: values.name,
+      lastName: values.lastName,
+      phone: values.phone,
+      dni: values.dni,
+      email: values.email,
+    };
+
     try {
-      const mpResponse = await getMercadPagoUrl(values);
+      const mpResponse = await getMercadPagoUrl(
+        values,
+        orderData,
+        orderId!,
+        userId
+      );
     } catch (error) {
       console.log("error mercadopago", error);
     }
@@ -68,7 +81,6 @@ export default function UserDataForm({ order }: { order: Order }) {
     //     phone: values.phone,
     //     dni: values.dni,
     //     email: values.email,
-    //     status: "PAID",
     //   },
     //   orderId as string
     // );

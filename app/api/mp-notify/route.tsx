@@ -21,6 +21,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
       if (payment.status === "approved") {
         let orderId = payment.external_reference;
         // ACTUALIZAR ORDEN
+        // CREAR ACTION QUE ACTUALICE LA ORDEN Y CREE LOS TICKETS
       }
     }
   } catch (error) {

@@ -158,6 +158,7 @@ model TicketOrder {
   order     Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
   status    TicketOrderStatus 
   createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
 
   @@map("ticket_orders")
 }

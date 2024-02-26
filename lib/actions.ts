@@ -192,7 +192,7 @@ export async function getMercadPagoUrl(
   });
 
   const siteUrl =
-    "https://d6f6-2803-9800-98c4-84d9-a941-437e-6cd9-415a.ngrok-free.app";
+    "https://4fe7-2803-9800-98c4-84d9-2115-3961-960f-7dba.ngrok-free.app";
   try {
     preference = await new Preference(client).create({
       body: {
@@ -247,6 +247,7 @@ export async function payOrderHandler(orderId: string) {
         code: "code",
         date: new Date(dateObj.date),
         orderId: orderId,
+        eventId: order.event.id,
         status: "NOT_VALIDATED",
       });
     }

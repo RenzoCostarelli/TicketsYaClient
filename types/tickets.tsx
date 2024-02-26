@@ -44,5 +44,6 @@ export type TicketOrderType = {
   code: string;
   date: Date;
   orderId: string;
+  eventId: string;
   status: "NOT_VALIDATED" | "VALIDATED";
 };

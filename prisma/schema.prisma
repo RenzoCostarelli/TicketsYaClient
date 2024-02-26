@@ -76,6 +76,7 @@ model Event {
   userId          String
   ticketTypes     TicketType[]
   orders          Order[]
+  tickets         TicketOrder[]
   validatorToken  ValidatorToken[]
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @default(now())
@@ -154,8 +155,10 @@ model TicketOrder {
   email     String?  
   code      String       
   date      DateTime     
-  orderId   String       
+  orderId   String   
+  eventId   String    
   order     Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  event     Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
   status    TicketOrderStatus 
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt

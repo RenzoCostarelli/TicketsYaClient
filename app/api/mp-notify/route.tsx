@@ -1,34 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
-// import mercadopago, { payment } from "mercadopago";
+import { MercadoPagoConfig, Payment } from "mercadopago";
 
-// mercadopago.configure({
-//     access_token: process.env.MP_ACCESS_TOKEN!,
-// })
+// ESTE TOKEN PUEDE SER EL GLOBAL DE LA MARCA,
+// NO NECESITA SER EL DEL USUARIO Y BASICAMENTE
+// ACA NO PODEMOS CONSEGUIR EL DEL USUARIO,
+// LO USAMOS SOLO PARA VER EL ESTADO DLE PAGO
+const client = new MercadoPagoConfig({
+  accessToken: process.env.MP_ACCESS_TOKEN!,
+});
 
 export async function POST(req: NextRequest, res: NextResponse) {
-  console.log("llego api");
   const r = await req.json();
   const topic = r.topic || r.type;
-  console.log("r", r);
-  // try {
-  //     if(topic === "payment") {
-  //         const paymentId = r.data.id
-  //         let payment = await mercadopago.payment.findById(Number(paymentId))
-  //         let paymentStatus = payment.body.status
-  //         // console.log('payment status', paymentStatus)
-  //         if (paymentStatus === "approved") {
-  //             let offerId = payment.body.external_reference
-  //             const response = await fetch(`${process.env.apiUrl}/orders/${offerId}`, {
-  //               method: 'PATCH',
-  //               headers: {
-  //                 "Content-Type": "application/json",
-  //               },
-  //               body: JSON.stringify({"status": "aproved"})
-  //             });
-  //             const result = await response.json();
-  //         }
-  //     }
-  // } catch (error) {
-  //     console.log(error)
-  // }
+
+  try {
+    if (topic === "payment") {
+      const paymentId = r.data.id;
+      const payment = await new Payment(client).get({ id: paymentId });
+
+      if (payment.status === "approved") {
+        let orderId = payment.external_reference;
+        // ACTUALIZAR ORDEN
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
 }

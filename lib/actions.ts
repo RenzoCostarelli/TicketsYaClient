@@ -186,7 +186,7 @@ export async function getMercadPagoUrl(
   });
 
   const siteUrl =
-    "https://78b0-2803-9800-98c4-84d9-74f0-4336-1ad8-3044.ngrok-free.app";
+    "https://d6c3-2803-9800-98c4-84d9-a941-437e-6cd9-415a.ngrok-free.app";
   try {
     preference = await new Preference(client).create({
       body: {
@@ -202,7 +202,7 @@ export async function getMercadPagoUrl(
             quantity: 1,
           },
         ],
-        // external_reference: product.orderId,
+        external_reference: "external",
         auto_return: "approved",
         back_urls: {
           success: `${siteUrl}/`,

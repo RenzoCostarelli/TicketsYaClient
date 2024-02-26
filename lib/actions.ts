@@ -4,9 +4,15 @@ import * as Eventos from "@/lib/api/eventos";
 import * as Orders from "@/lib/api/orders";
 import * as TicketTypes from "@/lib/api/ticket-types";
 import * as Users from "@/lib/api/users";
+import * as TikcetOrders from "@/lib/api/ticket-orders";
 import { EventStatus } from "@/types/event";
 import { Product } from "@/types/product";
-import { TicketType, UpdateTicketTypeType } from "@/types/tickets";
+import {
+  DatesType,
+  TicketOrderType,
+  TicketType,
+  UpdateTicketTypeType,
+} from "@/types/tickets";
 import MercadoPagoConfig, { Preference } from "mercadopago";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -186,23 +192,19 @@ export async function getMercadPagoUrl(
   });
 
   const siteUrl =
-    "https://d6c3-2803-9800-98c4-84d9-a941-437e-6cd9-415a.ngrok-free.app";
+    "https://d6f6-2803-9800-98c4-84d9-a941-437e-6cd9-415a.ngrok-free.app";
   try {
     preference = await new Preference(client).create({
       body: {
         items: [
           {
-            // id: `${product.title}-${Math.floor(Math.random() * 100000)}`,
-            // title: product.title,
-            // unit_price: product.price,
-            // quantity: 1,
-            id: `id del producto`,
-            title: "titulo",
-            unit_price: 2000,
+            id: `${product.title}-${Math.floor(Math.random() * 100000)}`,
+            title: `${product.title} x${product.quantity}`,
+            unit_price: product.price * product.quantity,
             quantity: 1,
           },
         ],
-        external_reference: "external",
+        external_reference: orderId,
         auto_return: "approved",
         back_urls: {
           success: `${siteUrl}/`,
@@ -218,13 +220,46 @@ export async function getMercadPagoUrl(
   if (preference) {
     redirect(preference.sandbox_init_point!);
   }
-  // try {
-  //   const result = await fetch("http://localhost:3000/api/mercado-pago", {
-  //     method: "POST",
-  //     body: JSON.stringify({ product }),
-  //   });
-  //   console.log("result", result);
-  // } catch (error) {
-  //   console.log(error);
-  // }
+}
+
+export async function payOrderHandler(orderId: string) {
+  const order = await getOrderById(orderId);
+  console.log("order", order);
+  if (!order) return;
+
+  const dates = JSON.parse(order.ticketType.dates!);
+  if (!dates) return;
+
+  updateOrder(
+    {
+      status: "PAID",
+    },
+    orderId
+  );
+  const ticketsData: TicketOrderType[] = [];
+  dates.forEach((dateObj: DatesType) => {
+    for (let i = 0; i < order.quantity; i++) {
+      ticketsData.push({
+        name: order.name!,
+        lastName: order.lastName!,
+        dni: order.dni!,
+        email: order.email!,
+        code: "code",
+        date: new Date(dateObj.date),
+        orderId: orderId,
+        status: "NOT_VALIDATED",
+      });
+    }
+  });
+  createTicketOrder(ticketsData);
+}
+
+export async function createTicketOrder(tickets: TicketOrderType[]) {
+  try {
+    const result = await TikcetOrders.createTicketOrder(tickets);
+    console.log("Tickets creados:", result);
+  } catch (error) {
+    console.log("Error creando tickets:", error);
+    throw new Error("Error tickets");
+  }
 }

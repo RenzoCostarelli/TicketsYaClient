@@ -35,3 +35,14 @@ export type DatesType = {
   id: number;
   date: string;
 };
+
+export type TicketOrderType = {
+  name: string;
+  lastName: string;
+  dni: string;
+  email: string;
+  code: string;
+  date: Date;
+  orderId: string;
+  status: "NOT_VALIDATED" | "VALIDATED";
+};

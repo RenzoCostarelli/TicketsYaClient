@@ -10,7 +10,7 @@ export async function getOrderById(orderId: string) {
       id: orderId,
     },
     include: {
-      tickets: true,
+      ticketType: true,
       event: true,
     },
   });

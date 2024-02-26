@@ -15,7 +15,7 @@ import {
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { getMercadPagoUrl, updateOrder } from "@/lib/actions";
+import { getMercadPagoUrl, payOrderHandler, updateOrder } from "@/lib/actions";
 import { Order } from "@/types/order";
 
 const formSchema = z
@@ -64,9 +64,21 @@ export default function UserDataForm({ order }: { order: Order }) {
       email: values.email,
     };
 
+    const product = {
+      title: order.ticketType!.title,
+      price: order.ticketType!.price,
+      quantity: order.quantity,
+    };
+
     try {
+      // updateOrder(
+      //   {
+      //     orderData,
+      //   },
+      //   orderId as string
+      // );
       const mpResponse = await getMercadPagoUrl(
-        values,
+        product,
         orderData,
         orderId!,
         userId
@@ -74,16 +86,6 @@ export default function UserDataForm({ order }: { order: Order }) {
     } catch (error) {
       console.log("error mercadopago", error);
     }
-    // updateOrder(
-    //   {
-    //     name: values.name,
-    //     lastName: values.lastName,
-    //     phone: values.phone,
-    //     dni: values.dni,
-    //     email: values.email,
-    //   },
-    //   orderId as string
-    // );
   }
 
   function expire() {

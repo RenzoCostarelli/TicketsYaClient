@@ -43,7 +43,7 @@ const FormSchema = z.object({
   title: z.string(),
   price: z.number(),
   quantity: z.number(),
-  status: z.enum(["ACTIVE", "INACTIVE", "ENDED", "REMOVED"]),
+  status: z.enum(["ACTIVE", "INACTIVE", "ENDED", "DELETED"]),
   // startDate: z.date(),
   endDate: z.date().optional(),
 });

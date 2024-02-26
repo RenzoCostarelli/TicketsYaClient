@@ -1,4 +1,5 @@
 import { Evento } from "./event";
+import { TicketType } from "./tickets";
 
 export interface Order {
   id?: string;
@@ -11,4 +12,6 @@ export interface Order {
   eventId: string;
   createdAt: Date;
   event?: Evento;
+  ticketType?: TicketType;
+  quantity?: number;
 }

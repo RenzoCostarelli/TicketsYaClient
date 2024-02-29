@@ -36,3 +36,8 @@ export const datesFormater = (dates: string) => {
   const groupedDates = formatDatesByMonth(groupedMonths);
   return groupedDates;
 };
+
+import { generateReactHelpers } from "@uploadthing/react/hooks";
+import type { OurFileRouter } from "@/app/api/uploadthing/core";
+
+export const { useUploadThing, uploadFiles } = generateReactHelpers<OurFileRouter>();

@@ -22,6 +22,9 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 
+import { FileUploader } from "@/app/dashboard/components/file-uploader/file-uploader";
+import { useUploadThing } from "@/lib/utils";
+
 const formSchema = z.object({
   title: z.string().min(5, {
     message: "El titulo debe tener al menos 5 caracteres.",
@@ -29,15 +32,21 @@ const formSchema = z.object({
   description: z.string(),
   location: z.string(),
   address: z.string(),
-  imageUrl: z.string(),
+  file: z.any(),
+  image: z.string(),
+  //.refine((file) => file?.length == 1, "File is required."),
 });
 
 export default function CreateEventForm({ userId }: { userId: string }) {
   const [dateTimeSelections, setDateTimeSelections] = useState([
     { id: 0, date: new Date().toISOString().slice(0, 16) },
   ]);
+  const [files, setFiles] = useState<File[]>([]);
+
+  const { startUpload } = useUploadThing("profileImage");
+
   const { toast } = useToast();
-  
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -45,7 +54,8 @@ export default function CreateEventForm({ userId }: { userId: string }) {
       description: "",
       location: "",
       address: "",
-      imageUrl: "https://placehold.co/600x400/EEE/31343C",
+      file: "",
+      image: "https://placehold.co/600x400/EEE/31343C",
     },
   });
 
@@ -73,32 +83,41 @@ export default function CreateEventForm({ userId }: { userId: string }) {
     setDateTimeSelections(updatedSelections);
   };
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     const parsedDates = JSON.stringify(dateTimeSelections);
+    let uploadedImagesUrl: string = "";
 
-    createEvent({
-      title: values.title,
-      description: values.description,
-      location: values.location,
-      address: values.address,
-      image: values.imageUrl,
-      dates: parsedDates,
-      userId: userId,
-      status: "ACTIVE",
-    })
-      .then(() => {
-        form.reset();
-        toast({
-          title: "Evento creado!",
-        });
+    if (files.length > 0) {
+      const uploadedImages = await startUpload(files);
+      if (!uploadedImages) {
+        return;
+      }
+      uploadedImagesUrl = uploadedImages[0].url;
+
+      createEvent({
+        title: values.title,
+        description: values.description,
+        location: values.location,
+        address: values.address,
+        image: uploadedImagesUrl,
+        dates: parsedDates,
+        userId: userId,
+        status: "ACTIVE",
       })
-      .catch((error) => {
-        console.log("error creando evento", error);
-        toast({
-          variant: "destructive",
-          title: "error creando evento",
+        .then(() => {
+          form.reset();
+          toast({
+            title: "Evento creado!",
+          });
+        })
+        .catch((error) => {
+          console.log("error creando evento", error);
+          toast({
+            variant: "destructive",
+            title: "error creando evento",
+          });
         });
-      });
+    }
   }
 
   return (
@@ -133,7 +152,6 @@ export default function CreateEventForm({ userId }: { userId: string }) {
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="location"
@@ -171,18 +189,21 @@ export default function CreateEventForm({ userId }: { userId: string }) {
         />
         <FormField
           control={form.control}
-          name="imageUrl"
+          name="file"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Imagen</FormLabel>
               <FormControl>
-                <Input placeholder="imagen del evento" {...field} />
+                <FileUploader
+                  onFieldChange={field.onChange}
+                  imageUrl={field.value}
+                  setFiles={setFiles}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-
         <Button type="submit">Guardar evento</Button>
       </form>
     </Form>

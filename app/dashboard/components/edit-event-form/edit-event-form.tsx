@@ -41,11 +41,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { cn } from "@/lib/utils";
+import { cn, useUploadThing } from "@/lib/utils";
 import { format } from "date-fns";
 import Link from "next/link";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import { FileUploader } from "../file-uploader/file-uploader";
 
 const formSchema = z.object({
   title: z.string().min(5, {
@@ -54,14 +55,18 @@ const formSchema = z.object({
   description: z.string(),
   location: z.string(),
   address: z.string(),
-  imageUrl: z.string(),
+  image: z.string(),
+  file: z.any(),
 });
 
 export default function EditEventForm({ evento }: { evento: Evento }) {
   const parsedDates = JSON.parse(evento.dates);
   const [dateTimeSelections, setDateTimeSelections] = useState(parsedDates);
+  const [files, setFiles] = useState<File[]>([]);
   const { toast } = useToast();
-  
+
+  const { startUpload } = useUploadThing("profileImage");
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -69,7 +74,8 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
       description: evento.description,
       location: evento.location,
       address: evento.address,
-      imageUrl: evento.image,
+      image: evento.image,
+      file: evento.image,
     },
   });
 
@@ -97,35 +103,100 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
     setDateTimeSelections(updatedSelections);
   };
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     const parsedDates = JSON.stringify(dateTimeSelections);
+    let uploadedImagesUrl: string = "";
 
-    updateEvent(
-      {
-        title: values.title,
-        description: values.description,
-        location: values.location,
-        address: values.address,
-        image: values.imageUrl,
-        dates: parsedDates,
-        userId: evento.userId,
-        status: "ACTIVE",
-      },
-      evento.id
-    )
-      .then(() => {
-        form.reset();
-        toast({
-          title: "Evento editado!",
-        });
-      })
-      .catch((error) => {
-        console.log("error editando el evento", error);
+    /**
+     * (files.length > 0) T -> deletePrevious -> startUpload -> updateEvent
+     * (files.length > 0 && values.image) F -> deletePrevious -> startUpload -> updateEvent
+     */
+    //return
+    if (files.length > 0) {
+      const uploadedImages = await startUpload(files);
+      if (!uploadedImages) {
         toast({
           variant: "destructive",
-          title: "Error editando el evento",
+          title: "Error cargando la imágen",
         });
+        return;
+      }
+      uploadedImagesUrl = uploadedImages[0].url;
+      await fetch('/api/uploadthing', {
+        method: "DELETE",
+        body: JSON.stringify(values.image)
       });
+
+      updateEvent(
+        {
+          title: values.title,
+          description: values.description,
+          location: values.location,
+          address: values.address,
+          image: uploadedImagesUrl,
+          dates: parsedDates,
+          userId: evento.userId,
+          status: "ACTIVE",
+        },
+        evento.id
+      )
+        .then(() => {
+          form.reset({
+            title: values.title,
+            description: values.description,
+            location: values.location,
+            address: values.address,
+            image: uploadedImagesUrl,
+            file: uploadedImagesUrl,
+          });
+          toast({
+            title: "Evento editado!",
+          });
+        })
+        .catch((error) => {
+          console.log("error editando el evento", error);
+          toast({
+            variant: "destructive",
+            title: "Error editando el evento",
+          });
+        });
+    }
+
+    if (files.length === 0 && values.image) {
+      updateEvent(
+        {
+          title: values.title,
+          description: values.description,
+          location: values.location,
+          address: values.address,
+          image: values.image,
+          dates: parsedDates,
+          userId: evento.userId,
+          status: "ACTIVE",
+        },
+        evento.id
+      )
+        .then(() => {
+          form.reset({
+            title: values.title,
+            description: values.description,
+            location: values.location,
+            address: values.address,
+            image: values.image,
+            file: values.image,
+          });
+          toast({
+            title: "Evento editado!",
+          });
+        })
+        .catch((error) => {
+          console.log("error editando el evento", error);
+          toast({
+            variant: "destructive",
+            title: "Error editando el evento",
+          });
+        });
+    }
   }
 
   return (
@@ -199,12 +270,16 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
           />
           <FormField
             control={form.control}
-            name="imageUrl"
+            name="file"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Imagen</FormLabel>
                 <FormControl>
-                  <Input placeholder="imagen del evento" {...field} />
+                  <FileUploader
+                    onFieldChange={field.onChange}
+                    imageUrl={field.value}
+                    setFiles={setFiles}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -219,7 +294,7 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
     </>
   );
 }
-
+/*
 const ticketsFormSchema = z.object({
   selectedDates: z
     .array(z.number())
@@ -413,4 +488,4 @@ function TicketTypesDialog({
       </DialogContent>
     </Dialog>
   );
-}
+}*/

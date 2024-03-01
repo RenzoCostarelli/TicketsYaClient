@@ -84,7 +84,7 @@ export default function CreateEventForm({ userId }: { userId: string }) {
     setDateTimeSelections(updatedSelections);
   };
 
-  const updateDataEvent = (values: Evento) => {
+  const createDataEvent = (values: Evento) => {
     const {
       title,
       description,
@@ -132,7 +132,7 @@ export default function CreateEventForm({ userId }: { userId: string }) {
       }
       uploadedImagesUrl = uploadedImages[0].url;
 
-      updateDataEvent({
+      createDataEvent({
         title: values.title,
         description: values.description,
         location: values.location,

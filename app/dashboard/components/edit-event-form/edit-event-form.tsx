@@ -112,15 +112,7 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
       },
       id
     )
-      .then(() => {
-        form.reset({
-          title,
-          description,
-          location,
-          address,
-          image,
-          file,
-        });
+      .then(() => {       
         toast({
           title: "Evento editado!",
         });

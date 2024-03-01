@@ -24,6 +24,7 @@ import { useToast } from "@/components/ui/use-toast";
 
 import { FileUploader } from "@/app/dashboard/components/file-uploader/file-uploader";
 import { useUploadThing } from "@/lib/utils";
+import { Evento } from "@/types/event";
 
 const formSchema = z.object({
   title: z.string().min(5, {
@@ -83,6 +84,43 @@ export default function CreateEventForm({ userId }: { userId: string }) {
     setDateTimeSelections(updatedSelections);
   };
 
+  const updateDataEvent = (values: Evento) => {
+    const {
+      title,
+      description,
+      location,
+      address,
+      image,
+      dates,
+      userId,
+      status,
+    } = values;
+
+    createEvent({
+      title,
+      description,
+      location,
+      address,
+      image,
+      dates,
+      userId,
+      status,
+    })
+      .then(() => {
+        form.reset();
+        toast({
+          title: "Evento creado!",
+        });
+      })
+      .catch((error) => {
+        console.log("error creando evento", error);
+        toast({
+          variant: "destructive",
+          title: "error creando evento",
+        });
+      });
+  };
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const parsedDates = JSON.stringify(dateTimeSelections);
     let uploadedImagesUrl: string = "";
@@ -94,7 +132,7 @@ export default function CreateEventForm({ userId }: { userId: string }) {
       }
       uploadedImagesUrl = uploadedImages[0].url;
 
-      createEvent({
+      updateDataEvent({
         title: values.title,
         description: values.description,
         location: values.location,
@@ -103,20 +141,8 @@ export default function CreateEventForm({ userId }: { userId: string }) {
         dates: parsedDates,
         userId: userId,
         status: "ACTIVE",
-      })
-        .then(() => {
-          form.reset();
-          toast({
-            title: "Evento creado!",
-          });
-        })
-        .catch((error) => {
-          console.log("error creando evento", error);
-          toast({
-            variant: "destructive",
-            title: "error creando evento",
-          });
-        });
+        id: "",
+      });
     }
   }
 

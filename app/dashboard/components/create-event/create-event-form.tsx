@@ -85,27 +85,9 @@ export default function CreateEventForm({ userId }: { userId: string }) {
   };
 
   const createDataEvent = (values: Evento) => {
-    const {
-      title,
-      description,
-      location,
-      address,
-      image,
-      dates,
-      userId,
-      status,
-    } = values;
+    const {...props } = values;
 
-    createEvent({
-      title,
-      description,
-      location,
-      address,
-      image,
-      dates,
-      userId,
-      status,
-    })
+    createEvent({...props})
       .then(() => {
         form.reset();
         toast({

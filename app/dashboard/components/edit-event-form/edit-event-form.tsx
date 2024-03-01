@@ -87,32 +87,10 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
   };
 
   const updateDataEvent = (values: Evento, file: string) => {
-    const {
-      title,
-      description,
-      location,
-      address,
-      image,
-      dates,
-      userId,
-      status,
-      id,
-    } = values;
+    const { id, ...props } = values;
 
-    updateEvent(
-      {
-        title,
-        description,
-        location,
-        address,
-        image,
-        dates,
-        userId,
-        status,
-      },
-      id
-    )
-      .then(() => {       
+    updateEvent({ ...props }, id)
+      .then(() => {
         toast({
           title: "Evento editado!",
         });

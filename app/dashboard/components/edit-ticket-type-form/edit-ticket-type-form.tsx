@@ -43,6 +43,7 @@ const FormSchema = z.object({
   title: z.string(),
   price: z.number(),
   quantity: z.number(),
+  isFree: z.boolean(),
   status: z.enum(["ACTIVE", "INACTIVE", "ENDED", "DELETED"]),
   // startDate: z.date(),
   endDate: z.date().optional(),
@@ -69,6 +70,7 @@ export default function EditTycketTypeForm({
       price: ticket.price as number,
       status: ticket.status,
       quantity: ticket.quantity,
+      isFree: ticket.isFree,
       // startDate: undefined,
       endDate: ticket.endDate || undefined,
     },
@@ -85,6 +87,7 @@ export default function EditTycketTypeForm({
       price: values.price as number,
       dates: stringDates,
       quantity: values.quantity,
+      isFree: values.isFree,
       endDate: values.endDate,
       status: values.status,
     };
@@ -113,6 +116,21 @@ export default function EditTycketTypeForm({
                 <Input placeholder="Titulo del evento" {...field} />
               </FormControl>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="isFree"
+          render={({ field }) => (
+            <FormItem>              
+              <FormControl>
+                <Checkbox 
+                    checked={field.value}
+                    onCheckedChange={() => field.onChange(!field.value)}
+                  />
+              </FormControl>
+              <FormLabel>Gratis</FormLabel>
             </FormItem>
           )}
         />

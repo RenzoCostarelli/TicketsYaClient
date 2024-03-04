@@ -5,6 +5,9 @@ export async function getEventsByUserId(userId: string) {
   return await db.event.findMany({
     where: {
       userId: userId,
+      status: {
+        not: "DELETED"
+      },
     },
     include: {
       user: true,

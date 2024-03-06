@@ -21,11 +21,8 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { z } from "zod";
 
 const profileFormSchema = z.object({
-  mpPublicKey: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
   mpAccessToken: z.string({
-    required_error: "Please select an email to display.",
+    required_error: "Campo requerido",
   }),
 });
 
@@ -33,8 +30,7 @@ type MpFormValues = z.infer<typeof profileFormSchema>;
 
 export default function MercadoPagoForm({ user }: { user: User }) {
   const defaultValues: Partial<MpFormValues> = {
-    mpPublicKey: user.mpPublicKey as string | "",
-    mpAccessToken: user.mpPublicKey as string | "",
+    mpAccessToken: user.mpAccessToken as string | "",
   };
   const form = useForm<MpFormValues>({
     resolver: zodResolver(profileFormSchema),
@@ -47,7 +43,6 @@ export default function MercadoPagoForm({ user }: { user: User }) {
       updateUser(
         {
           mpAccessToken: values.mpAccessToken,
-          mpPublicKey: values.mpPublicKey,
         },
         user?.email as string
       );
@@ -61,20 +56,6 @@ export default function MercadoPagoForm({ user }: { user: User }) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="mpPublicKey"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>MercadoPago Public Key</FormLabel>
-              <FormControl>
-                <Input placeholder="MercadoPago Public Key" {...field} />
-              </FormControl>
-              <FormDescription>Aca va la public key</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <FormField
           control={form.control}
           name="mpAccessToken"

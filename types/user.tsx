@@ -5,5 +5,4 @@ export type User = {
   emailVerified?: Date | null;
   image?: string | null;
   mpAccessToken?: string | null;
-  mpPublicKey?: string | null;
 };

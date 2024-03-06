@@ -41,7 +41,6 @@ model User {
   emailVerified DateTime?
   image         String?
   mpAccessToken String?
-  mpPublicKey   String?
   accounts      Account[]
   sessions      Session[]
   events        Event[]

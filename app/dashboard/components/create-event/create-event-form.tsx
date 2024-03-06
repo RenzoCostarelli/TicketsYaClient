@@ -24,7 +24,7 @@ import { useToast } from "@/components/ui/use-toast";
 
 import { FileUploader } from "@/app/dashboard/components/file-uploader/file-uploader";
 import { useUploadThing } from "@/lib/utils";
-import { Evento } from "@/types/event";
+import { Evento, ImageState } from "@/types/event";
 
 const formSchema = z.object({
   title: z.string().min(5, {
@@ -43,9 +43,9 @@ export default function CreateEventForm({ userId }: { userId: string }) {
     { id: 0, date: new Date().toISOString().slice(0, 16) },
   ]);
   const [files, setFiles] = useState<File[]>([]);
+  const [fileStatus, setFileStatus] = useState<ImageState>("EMPTY");
 
   const { startUpload } = useUploadThing("profileImage");
-
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -85,7 +85,7 @@ export default function CreateEventForm({ userId }: { userId: string }) {
   };
 
   const createDataEvent = (values: Evento) => {
-    const { ...props } = values;
+    const { id, ...props } = values;
 
     createEvent({ ...props })
       .then(() => {
@@ -105,27 +105,26 @@ export default function CreateEventForm({ userId }: { userId: string }) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const parsedDates = JSON.stringify(dateTimeSelections);
-    let uploadedImagesUrl: string = "";
 
     if (files.length > 0) {
       const uploadedImages = await startUpload(files);
-      if (!uploadedImages) {
-        return;
+      if (uploadedImages) {
+        values.image = uploadedImages[0].url;
       }
-      uploadedImagesUrl = uploadedImages[0].url;
+    } 
 
-      createDataEvent({
-        title: values.title,
-        description: values.description,
-        location: values.location,
-        address: values.address,
-        image: uploadedImagesUrl,
-        dates: parsedDates,
-        userId: userId,
-        status: "ACTIVE",
-        id: "",
-      });
-    }
+    createDataEvent({
+      title: values.title,
+      description: values.description,
+      location: values.location,
+      address: values.address,
+      image: values.image,
+      dates: parsedDates,
+      userId: userId,
+      status: "ACTIVE",
+      id: "",
+    });
+
   }
 
   return (
@@ -206,6 +205,7 @@ export default function CreateEventForm({ userId }: { userId: string }) {
                   onFieldChange={field.onChange}
                   imageUrl={field.value}
                   setFiles={setFiles}
+                  setFileStatus={setFileStatus}
                 />
               </FormControl>
               <FormMessage />

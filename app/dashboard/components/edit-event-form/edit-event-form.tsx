@@ -17,8 +17,8 @@ import DatesPicker from "@/components/dates-picker/dates-picker";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Evento } from "@/types/event";
-import { cn, useUploadThing } from "@/lib/utils";
+import { Evento, ImageState } from "@/types/event";
+import { cn, useUploadThing, deleteImage } from "@/lib/utils";
 import Link from "next/link";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
@@ -39,6 +39,8 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
   const parsedDates = JSON.parse(evento.dates);
   const [dateTimeSelections, setDateTimeSelections] = useState(parsedDates);
   const [files, setFiles] = useState<File[]>([]);
+  const [fileStatus, setFileStatus] = useState<ImageState>("EMPTY");
+
   const { toast } = useToast();
 
   const { startUpload } = useUploadThing("profileImage");
@@ -79,14 +81,7 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
     setDateTimeSelections(updatedSelections);
   };
 
-  const deleteImage = async (url: string) => {
-    await fetch("/api/uploadthing", {
-      method: "DELETE",
-      body: JSON.stringify(url),
-    });
-  };
-
-  const updateDataEvent = (values: Evento, file: string) => {
+  const updateDataEvent = (values: Evento) => {
     const { id, ...props } = values;
 
     updateEvent({ ...props }, id)
@@ -106,53 +101,31 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const parsedDates = JSON.stringify(dateTimeSelections);
-    let uploadedImagesUrl: string = "";
 
-    if (files.length > 0) {
+    if (fileStatus === "UPDATED") {
       const uploadedImages = await startUpload(files);
-      if (!uploadedImages) {
-        toast({
-          variant: "destructive",
-          title: "Error cargando la imágen",
-        });
-        return;
+      if (uploadedImages) {
+        deleteImage(evento.image);
+        values.image = uploadedImages[0].url;
       }
-
-      uploadedImagesUrl = uploadedImages[0].url;
-      deleteImage(values.image);
-
-      updateDataEvent(
-        {
-          title: values.title,
-          description: values.description,
-          location: values.location,
-          address: values.address,
-          image: uploadedImagesUrl,
-          dates: parsedDates,
-          userId: evento.userId,
-          status: "ACTIVE",
-          id: evento.id,
-        },
-        uploadedImagesUrl
-      );
+    }
+    
+    if(fileStatus === "DELETED") {
+      values.image = "https://placehold.co/600x400/EEE/31343C";
     }
 
-    if (files.length === 0 && values.image) {
-      updateDataEvent(
-        {
-          title: values.title,
-          description: values.description,
-          location: values.location,
-          address: values.address,
-          image: values.image, //dif
-          dates: parsedDates,
-          userId: evento.userId,
-          status: "ACTIVE",
-          id: evento.id,
-        },
-        values.image
-      );
-    }
+    updateDataEvent({
+      title: values.title,
+      description: values.description,
+      location: values.location,
+      address: values.address,
+      image: values.image,
+      dates: parsedDates,
+      userId: evento.userId,
+      status: "ACTIVE",
+      id: evento.id,
+    });
+
   }
 
   return (
@@ -234,8 +207,9 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
                   <FileUploader
                     onFieldChange={field.onChange}
                     imageUrl={field.value}
-                    setFiles={setFiles}
-                  />
+                    setFiles={setFiles} 
+                    setFileStatus={setFileStatus}                  
+                    />
                 </FormControl>
                 <FormMessage />
               </FormItem>

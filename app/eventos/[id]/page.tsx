@@ -10,8 +10,8 @@ export default async function Evento({ params }: { params: { id: string } }) {
   const groupedDates = datesFormater(evento?.dates as string);
   return (
     <>
-      <section className="w-full py-6 md:py-12">
-        <div className="container grid gap-6 px-4 md:px-6 grid-cols-2 xl:gap-12">
+      <section className="w-full py-6 md:py-12 bg-gray-50">
+        <div className="max-w-2xl container grid gap-6 px-4 md:px-6 grid-cols-2 xl:gap-12">
           <div className="flex flex-col justify-center space-y-4">
             <div className="space-y-2">
               <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">

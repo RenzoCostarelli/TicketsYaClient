@@ -20,6 +20,11 @@ export async function getEventsByUserId(userId: string) {
 
 export async function getAllEvents() {
   return await db.event.findMany({
+    where: {
+      status: {
+        not: "DELETED"
+      },
+    },
     include: {
       user: true,
     },

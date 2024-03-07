@@ -33,6 +33,7 @@ import { Evento } from "@/types/event";
 import { updateTicketType } from "@/lib/actions";
 import { DatesType, TicketType, UpdateTicketTypeType } from "@/types/tickets";
 import { useToast } from "@/components/ui/use-toast";
+import { useState } from "react";
 
 const FormSchema = z.object({
   selectedDates: z
@@ -61,6 +62,7 @@ export default function EditTycketTypeForm({
   const parsedTicketDates = JSON.parse(ticket.dates as string);
   // Extraemos el valor date del string parseado de feachas
   const datesValue = parsedTicketDates.map((date: DatesType) => date.date);
+  const [isFree, setIsFree] = useState<boolean | undefined>(ticket.isFree);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -123,12 +125,15 @@ export default function EditTycketTypeForm({
           control={form.control}
           name="isFree"
           render={({ field }) => (
-            <FormItem>              
+            <FormItem>
               <FormControl>
-                <Checkbox 
-                    checked={field.value}
-                    onCheckedChange={() => field.onChange(!field.value)}
-                  />
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={(e) => {
+                    setIsFree(!field.value);
+                    return field.onChange(!field.value);
+                  }}
+                />
               </FormControl>
               <FormLabel>Gratis</FormLabel>
             </FormItem>
@@ -145,6 +150,7 @@ export default function EditTycketTypeForm({
                   type="number"
                   {...field}
                   onChange={(e) => field.onChange(Number(e.target.value))}
+                  disabled={isFree}
                 />
               </FormControl>
               <FormMessage />

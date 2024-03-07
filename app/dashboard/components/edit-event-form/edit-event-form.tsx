@@ -18,34 +18,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Evento } from "@/types/event";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { CalendarIcon, DollarSign, TicketIcon } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import { cn, useUploadThing } from "@/lib/utils";
 import Link from "next/link";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import { FileUploader } from "../file-uploader/file-uploader";
 
 const formSchema = z.object({
   title: z.string().min(5, {
@@ -54,14 +31,20 @@ const formSchema = z.object({
   description: z.string(),
   location: z.string(),
   address: z.string(),
-  imageUrl: z.string(),
+  image: z.string(),
+  file: z.any(),
 });
 
 export default function EditEventForm({ evento }: { evento: Evento }) {
   const parsedDates = JSON.parse(evento.dates);
   const [dateTimeSelections, setDateTimeSelections] = useState(parsedDates);
+  const [files, setFiles] = useState<File[]>([]);
+  const [deleteImageValue, setDeleteImageValue] = useState<boolean>(false);
+
   const { toast } = useToast();
-  
+
+  const { startUpload } = useUploadThing("profileImage");
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -69,7 +52,8 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
       description: evento.description,
       location: evento.location,
       address: evento.address,
-      imageUrl: evento.image,
+      image: evento.image,
+      file: evento.image,
     },
   });
 
@@ -97,35 +81,54 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
     setDateTimeSelections(updatedSelections);
   };
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  const handleDeleteImage = async (url: string) => {
+    try {
+      return await fetch("/api/uploadthing", {
+        method: "DELETE",
+        body: JSON.stringify(url),
+      });
+    } catch (error) {
+      console.log("🚀 ~ deleteImage ~ error:", error);      
+    }
+  };
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     const parsedDates = JSON.stringify(dateTimeSelections);
 
-    updateEvent(
-      {
-        title: values.title,
-        description: values.description,
-        location: values.location,
-        address: values.address,
-        image: values.imageUrl,
-        dates: parsedDates,
-        userId: evento.userId,
-        status: "ACTIVE",
-      },
-      evento.id
-    )
-      .then(() => {
-        form.reset();
-        toast({
-          title: "Evento editado!",
-        });
-      })
-      .catch((error) => {
-        console.log("error editando el evento", error);
-        toast({
-          variant: "destructive",
-          title: "Error editando el evento",
-        });
+    if (files.length > 0) {
+      const uploadedImages = await startUpload(files);
+      if (uploadedImages) {
+        handleDeleteImage(evento.image);
+        values.image = uploadedImages[0].url;
+      }
+    }
+    
+    if(deleteImageValue) {
+      values.image = "";
+    }    
+
+    updateEvent({
+      title: values.title,
+      description: values.description,
+      location: values.location,
+      address: values.address,
+      image: values.image,
+      dates: parsedDates,
+      userId: evento.userId,
+      status: "ACTIVE",
+    }, evento.id)
+    .then(() => {
+      toast({
+        title: "Evento editado!",
       });
+    })
+    .catch((error) => {
+      console.log("error editando el evento", error);
+      toast({
+        variant: "destructive",
+        title: "Error editando el evento",
+      });
+    });
   }
 
   return (
@@ -199,12 +202,17 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
           />
           <FormField
             control={form.control}
-            name="imageUrl"
+            name="file"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Imagen</FormLabel>
                 <FormControl>
-                  <Input placeholder="imagen del evento" {...field} />
+                  <FileUploader
+                    onFieldChange={field.onChange}
+                    imageUrl={field.value}
+                    setFiles={setFiles} 
+                    setDeleteImageValue={setDeleteImageValue}                  
+                    />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -217,200 +225,5 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
         </form>
       </Form>
     </>
-  );
-}
-
-const ticketsFormSchema = z.object({
-  selectedDates: z
-    .array(z.number())
-    .min(1, "Debes seleccionar al menos una fecha."),
-  title: z.string(),
-  price: z.number(),
-  quantity: z.number(),
-  status: z.string(),
-  startDate: z.date(),
-  endDate: z.date(),
-});
-
-function TicketTypesDialog({
-  eventId,
-  dates,
-}: {
-  eventId: string;
-  dates: any;
-}) {
-  const form = useForm<z.infer<typeof ticketsFormSchema>>({
-    resolver: zodResolver(ticketsFormSchema),
-    defaultValues: {
-      selectedDates: dates,
-      title: "",
-      price: 0,
-    },
-  });
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">
-          <TicketIcon /> Tickets
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] max-h-[90vh]">
-        <DialogHeader>
-          <DialogTitle>Datos del evento</DialogTitle>
-        </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={() => console.log("yep")} className="space-y-8">
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Titulo</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Titulo del evento" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="price"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Precio</FormLabel>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="endDate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Disponible hasta</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "w-[240px] pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) => date < new Date()}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Estado</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Estado" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="ACTIVE">Publicada</SelectItem>
-                      <SelectItem value="INACTIVE">Borrador</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="selectedDates"
-              render={() => (
-                <FormItem>
-                  <div className="mb-4">
-                    <FormLabel className="text-base">Fechas</FormLabel>
-                  </div>
-                  {dates.map((date: any) => {
-                    const dateObject = new Date(date.date);
-                    const arDate = new Intl.DateTimeFormat("es-AR", {
-                      dateStyle: "medium",
-                      timeStyle: "short",
-                    }).format(dateObject);
-                    return (
-                      <FormField
-                        key={date.id}
-                        control={form.control}
-                        name="selectedDates"
-                        render={({ field }) => {
-                          return (
-                            <FormItem
-                              key={date.id}
-                              className="flex flex-row items-start space-x-3 space-y-0"
-                            >
-                              <FormControl>
-                                <Checkbox
-                                  checked={field.value?.includes(date.id)}
-                                  onCheckedChange={(checked) => {
-                                    return checked
-                                      ? field.onChange([
-                                          ...field.value,
-                                          date.id,
-                                        ])
-                                      : field.onChange(
-                                          field.value?.filter(
-                                            (value) => value !== date.id
-                                          )
-                                        );
-                                  }}
-                                />
-                              </FormControl>
-                              <FormLabel className="text-sm font-normal">
-                                {arDate}
-                              </FormLabel>
-                            </FormItem>
-                          );
-                        }}
-                      />
-                    );
-                  })}
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <DialogFooter>
-              <Button type="submit">Guardar ticket</Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
   );
 }

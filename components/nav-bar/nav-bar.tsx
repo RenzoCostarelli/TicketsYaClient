@@ -12,9 +12,17 @@ import { TicketIcon } from "lucide-react";
 import { useSession, signOut, signIn } from "next-auth/react";
 import Link from "next/link";
 import { Button } from "../ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
+import { User } from "@/types/user";
 
-export default function NavBar() {
+export default function NavBar({ user }: { user?: User }) {
   const { data: session } = useSession();
+  console.log(user);
   return (
     <header className="flex h-20 w-full items-center px-4 md:px-6">
       <Link className="mr-6" href="/">
@@ -39,24 +47,42 @@ export default function NavBar() {
       )}
       {session && (
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Avatar className="h-9 w-9 ml-4 cursor-pointer">
+          <DropdownMenuTrigger className="relative" asChild>
+            <Avatar className="h-9 w-9 ml-4 cursor-pointer relative">
               <AvatarImage alt="@shadcn" src={session.user?.image as string} />
               <AvatarFallback>{session.user?.name?.charAt(0)}</AvatarFallback>
+              {!user?.mpAccessToken && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <div className="dot-notification"></div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Es necesario cargar los datos de pago</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
+
               <span className="sr-only">Desplegar menú de usuario</span>
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>{session.user?.name}</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem asChild>
               <Link href={"/dashboard/perfil"}>Perfil</Link>
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem asChild>
               <Link href={"/dashboard"}>Panel</Link>
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Link href={"/dashboard/integraciones"}>Integraciones</Link>
+            <DropdownMenuItem asChild>
+              <Link href={"/dashboard/integraciones"} className="relative">
+                Integraciones
+                {!user?.mpAccessToken && (
+                  <div className="dot-notification"></div>
+                )}
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>

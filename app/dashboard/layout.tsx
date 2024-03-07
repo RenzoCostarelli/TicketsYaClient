@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import { Toaster } from "@/components/ui/toaster";
+import "@uploadthing/react/styles.css";
 
 export const metadata: Metadata = {
   title: "Dashboard",

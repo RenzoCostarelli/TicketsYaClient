@@ -17,8 +17,8 @@ import DatesPicker from "@/components/dates-picker/dates-picker";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Evento, ImageState } from "@/types/event";
-import { cn, useUploadThing, deleteImage } from "@/lib/utils";
+import { Evento } from "@/types/event";
+import { cn, useUploadThing } from "@/lib/utils";
 import Link from "next/link";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
@@ -39,7 +39,7 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
   const parsedDates = JSON.parse(evento.dates);
   const [dateTimeSelections, setDateTimeSelections] = useState(parsedDates);
   const [files, setFiles] = useState<File[]>([]);
-  const [fileStatus, setFileStatus] = useState<ImageState>("EMPTY");
+  const [deleteImageValue, setDeleteImageValue] = useState<boolean>(false);
 
   const { toast } = useToast();
 
@@ -81,40 +81,33 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
     setDateTimeSelections(updatedSelections);
   };
 
-  const updateDataEvent = (values: Evento) => {
-    const { id, ...props } = values;
-
-    updateEvent({ ...props }, id)
-      .then(() => {
-        toast({
-          title: "Evento editado!",
-        });
-      })
-      .catch((error) => {
-        console.log("error editando el evento", error);
-        toast({
-          variant: "destructive",
-          title: "Error editando el evento",
-        });
+  const handleDeleteImage = async (url: string) => {
+    try {
+      return await fetch("/api/uploadthing", {
+        method: "DELETE",
+        body: JSON.stringify(url),
       });
+    } catch (error) {
+      console.log("🚀 ~ deleteImage ~ error:", error);      
+    }
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const parsedDates = JSON.stringify(dateTimeSelections);
 
-    if (fileStatus === "UPDATED") {
+    if (files.length > 0) {
       const uploadedImages = await startUpload(files);
       if (uploadedImages) {
-        deleteImage(evento.image);
+        handleDeleteImage(evento.image);
         values.image = uploadedImages[0].url;
       }
     }
     
-    if(fileStatus === "DELETED") {
-      values.image = "https://placehold.co/600x400/EEE/31343C";
-    }
+    if(deleteImageValue) {
+      values.image = "";
+    }    
 
-    updateDataEvent({
+    updateEvent({
       title: values.title,
       description: values.description,
       location: values.location,
@@ -123,9 +116,19 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
       dates: parsedDates,
       userId: evento.userId,
       status: "ACTIVE",
-      id: evento.id,
+    }, evento.id)
+    .then(() => {
+      toast({
+        title: "Evento editado!",
+      });
+    })
+    .catch((error) => {
+      console.log("error editando el evento", error);
+      toast({
+        variant: "destructive",
+        title: "Error editando el evento",
+      });
     });
-
   }
 
   return (
@@ -208,7 +211,7 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
                     onFieldChange={field.onChange}
                     imageUrl={field.value}
                     setFiles={setFiles} 
-                    setFileStatus={setFileStatus}                  
+                    setDeleteImageValue={setDeleteImageValue}                  
                     />
                 </FormControl>
                 <FormMessage />

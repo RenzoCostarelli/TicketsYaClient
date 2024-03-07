@@ -40,11 +40,3 @@ export const datesFormater = (dates: string) => {
   const groupedDates = formatDatesByMonth(groupedMonths);
   return groupedDates;
 };
-
-
-export const deleteImage = async (url: string) => {
-  return await fetch("/api/uploadthing", {
-    method: "DELETE",
-    body: JSON.stringify(url),
-  });
-};

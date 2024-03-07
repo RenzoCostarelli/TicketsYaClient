@@ -7,14 +7,12 @@ import { generateClientDropzoneAccept } from "uploadthing/client";
 
 import { ImagePlus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { deleteImage } from "@/lib/utils";
-import { ImageState } from "@/types/event";
 
 type FileUploaderProps = {
   onFieldChange: (url: string) => void;
   imageUrl: string;
   setFiles: Dispatch<SetStateAction<File[]>>;
-  setFileStatus: Dispatch<SetStateAction<ImageState>>;
+  setDeleteImageValue: Dispatch<SetStateAction<boolean>>;
 };
 
 const convertFileToUrl = (file: File) => URL.createObjectURL(file);
@@ -23,22 +21,24 @@ export function FileUploader({
   imageUrl,
   onFieldChange,
   setFiles,
-  setFileStatus,
+  setDeleteImageValue,
 }: FileUploaderProps) {
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setFiles(acceptedFiles);
     onFieldChange(convertFileToUrl(acceptedFiles[0]));
-    setFileStatus('UPDATED');
+    setDeleteImageValue(false);
   }, []);
 
   const handleDeleteImage = async (url: string) => {
     setFiles([]);
     onFieldChange("");
-    setFileStatus('DELETED');
+    setDeleteImageValue(true);
   };
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
+    maxFiles: 1,
+    multiple: false,
     accept: "image/*" ? generateClientDropzoneAccept(["image/*"]) : undefined,
   });
 
@@ -57,7 +57,7 @@ export function FileUploader({
         {...getRootProps()}
         className="flex-center border bg-dark-3 flex cursor-pointer flex-col overflow-hidden rounded-xl bg-grey-50"
       >
-        <input {...getInputProps()} className="cursor-pointer" />
+        <input {...getInputProps()} className="cursor-pointer" type="file"/>
 
         {imageUrl ? (
           <div className="flex h-full w-full flex-1 justify-center ">

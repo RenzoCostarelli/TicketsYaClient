@@ -11,5 +11,3 @@ export interface Evento {
   dates: string;
   status: EventStatus;
 }
-
-export type ImageState = "UPDATED" | "DELETED" | "EMPTY";

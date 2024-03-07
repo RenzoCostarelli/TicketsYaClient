@@ -24,7 +24,7 @@ import { useToast } from "@/components/ui/use-toast";
 
 import { FileUploader } from "@/app/dashboard/components/file-uploader/file-uploader";
 import { useUploadThing } from "@/lib/utils";
-import { Evento, ImageState } from "@/types/event";
+import { Evento } from "@/types/event";
 
 const formSchema = z.object({
   title: z.string().min(5, {
@@ -43,7 +43,7 @@ export default function CreateEventForm({ userId }: { userId: string }) {
     { id: 0, date: new Date().toISOString().slice(0, 16) },
   ]);
   const [files, setFiles] = useState<File[]>([]);
-  const [fileStatus, setFileStatus] = useState<ImageState>("EMPTY");
+  const [deleteImageValue, setDeleteImageValue] = useState<boolean>(false);
 
   const { startUpload } = useUploadThing("profileImage");
   const { toast } = useToast();
@@ -56,7 +56,7 @@ export default function CreateEventForm({ userId }: { userId: string }) {
       location: "",
       address: "",
       file: "",
-      image: "https://placehold.co/600x400/EEE/31343C",
+      image: "",
     },
   });
 
@@ -84,10 +84,26 @@ export default function CreateEventForm({ userId }: { userId: string }) {
     setDateTimeSelections(updatedSelections);
   };
 
-  const createDataEvent = (values: Evento) => {
-    const { id, ...props } = values;
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const parsedDates = JSON.stringify(dateTimeSelections);
 
-    createEvent({ ...props })
+    if (files.length > 0) {
+      const uploadedImages = await startUpload(files);
+      if (uploadedImages) {
+        values.image = uploadedImages[0].url;
+      }
+    } 
+
+    createEvent({
+      title: values.title,
+      description: values.description,
+      location: values.location,
+      address: values.address,
+      image: values.image,
+      dates: parsedDates,
+      userId: userId,
+      status: "ACTIVE"
+    })
       .then(() => {
         form.reset();
         toast({
@@ -101,30 +117,6 @@ export default function CreateEventForm({ userId }: { userId: string }) {
           title: "error creando evento",
         });
       });
-  };
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    const parsedDates = JSON.stringify(dateTimeSelections);
-
-    if (files.length > 0) {
-      const uploadedImages = await startUpload(files);
-      if (uploadedImages) {
-        values.image = uploadedImages[0].url;
-      }
-    } 
-
-    createDataEvent({
-      title: values.title,
-      description: values.description,
-      location: values.location,
-      address: values.address,
-      image: values.image,
-      dates: parsedDates,
-      userId: userId,
-      status: "ACTIVE",
-      id: "",
-    });
-
   }
 
   return (
@@ -205,7 +197,7 @@ export default function CreateEventForm({ userId }: { userId: string }) {
                   onFieldChange={field.onChange}
                   imageUrl={field.value}
                   setFiles={setFiles}
-                  setFileStatus={setFileStatus}
+                  setDeleteImageValue={setDeleteImageValue}
                 />
               </FormControl>
               <FormMessage />

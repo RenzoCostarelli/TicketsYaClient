@@ -175,7 +175,6 @@ export default function EditTycketTypeForm({
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="selectedDates"

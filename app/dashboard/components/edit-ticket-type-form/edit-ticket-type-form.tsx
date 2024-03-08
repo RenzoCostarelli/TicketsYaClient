@@ -62,7 +62,7 @@ export default function EditTycketTypeForm({
   const parsedTicketDates = JSON.parse(ticket.dates as string);
   // Extraemos el valor date del string parseado de feachas
   const datesValue = parsedTicketDates.map((date: DatesType) => date.date);
-  const [isFree, setIsFree] = useState<boolean | undefined>(ticket.isFree);
+  const [isFree, setIsFree] = useState<boolean>(ticket.isFree || false);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -84,6 +84,11 @@ export default function EditTycketTypeForm({
       date: date,
     }));
     const stringDates = JSON.stringify(formatedDates);
+
+    if (isFree) {
+      values.price = 0;
+    }
+    
     const data: UpdateTicketTypeType = {
       title: values.title,
       price: values.price as number,
@@ -149,7 +154,7 @@ export default function EditTycketTypeForm({
                 <Input
                   type="number"
                   {...field}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  onChange={(e) => field.onChange(Number(e.target.value)) }
                   disabled={isFree}
                 />
               </FormControl>

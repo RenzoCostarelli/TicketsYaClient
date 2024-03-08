@@ -75,6 +75,11 @@ export default function TycketTypeForm({ evento }: { evento: Evento }) {
       date: date,
     }));
     const stringDates = JSON.stringify(formatedDates);
+
+    if (isFree) {
+      values.price = 0;
+    }
+    
     const data: TicketType = {
       title: values.title,
       price: values.price as number,

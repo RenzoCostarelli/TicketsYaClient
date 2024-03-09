@@ -71,18 +71,22 @@ export default function UserDataForm({ order }: { order: Order }) {
     };
 
     try {
-      // updateOrder(
-      //   {
-      //     orderData,
-      //   },
-      //   orderId as string
-      // );
-      const mpResponse = await getMercadPagoUrl(
-        product,
-        orderData,
-        orderId!,
-        userId
-      );
+      if (order.ticketType!.isFree) {
+        await fetch("/api/free-ticket-notify", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            orderData,
+            orderId,
+            userId,
+          }),
+        });
+        return;
+      }
+
+      await getMercadPagoUrl(product, orderData, orderId!, userId);
     } catch (error) {
       console.log("error mercadopago", error);
     }

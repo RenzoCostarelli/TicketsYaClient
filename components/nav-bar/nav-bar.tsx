@@ -22,7 +22,6 @@ import { User } from "@/types/user";
 
 export default function NavBar({ user }: { user?: User }) {
   const { data: session } = useSession();
-  console.log(user);
   return (
     <header className="flex h-20 w-full items-center px-4 md:px-6">
       <Link className="mr-6" href="/">

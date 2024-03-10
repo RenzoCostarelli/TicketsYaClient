@@ -22,7 +22,7 @@ import { cn, useUploadThing } from "@/lib/utils";
 import Link from "next/link";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { FileUploader } from "../file-uploader/file-uploader";
+import { FileUploader } from "@/app/dashboard/components/file-uploader/file-uploader";
 
 const formSchema = z.object({
   title: z.string().min(5, {
@@ -40,7 +40,6 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
   const [dateTimeSelections, setDateTimeSelections] = useState(parsedDates);
   const [files, setFiles] = useState<File[]>([]);
   const [deleteImageValue, setDeleteImageValue] = useState<boolean>(false);
-
   const { toast } = useToast();
 
   const { startUpload } = useUploadThing("profileImage");

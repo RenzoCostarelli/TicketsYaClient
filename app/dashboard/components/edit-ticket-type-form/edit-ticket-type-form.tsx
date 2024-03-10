@@ -33,6 +33,7 @@ import { Evento } from "@/types/event";
 import { updateTicketType } from "@/lib/actions";
 import { DatesType, TicketType, UpdateTicketTypeType } from "@/types/tickets";
 import { useToast } from "@/components/ui/use-toast";
+import { useState } from "react";
 
 const FormSchema = z.object({
   selectedDates: z
@@ -43,6 +44,7 @@ const FormSchema = z.object({
   title: z.string(),
   price: z.number(),
   quantity: z.number(),
+  isFree: z.boolean(),
   status: z.enum(["ACTIVE", "INACTIVE", "ENDED", "DELETED"]),
   // startDate: z.date(),
   endDate: z.date().optional(),
@@ -60,6 +62,7 @@ export default function EditTycketTypeForm({
   const parsedTicketDates = JSON.parse(ticket.dates as string);
   // Extraemos el valor date del string parseado de feachas
   const datesValue = parsedTicketDates.map((date: DatesType) => date.date);
+  const [isFree, setIsFree] = useState<boolean>(ticket.isFree || false);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -69,6 +72,7 @@ export default function EditTycketTypeForm({
       price: ticket.price as number,
       status: ticket.status,
       quantity: ticket.quantity,
+      isFree: ticket.isFree,
       // startDate: undefined,
       endDate: ticket.endDate || undefined,
     },
@@ -80,11 +84,17 @@ export default function EditTycketTypeForm({
       date: date,
     }));
     const stringDates = JSON.stringify(formatedDates);
+
+    if (isFree) {
+      values.price = 0;
+    }
+    
     const data: UpdateTicketTypeType = {
       title: values.title,
       price: values.price as number,
       dates: stringDates,
       quantity: values.quantity,
+      isFree: values.isFree,
       endDate: values.endDate,
       status: values.status,
     };
@@ -118,6 +128,24 @@ export default function EditTycketTypeForm({
         />
         <FormField
           control={form.control}
+          name="isFree"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={(e) => {
+                    setIsFree(!field.value);
+                    return field.onChange(!field.value);
+                  }}
+                />
+              </FormControl>
+              <FormLabel>Gratis</FormLabel>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
           name="price"
           render={({ field }) => (
             <FormItem>
@@ -126,7 +154,8 @@ export default function EditTycketTypeForm({
                 <Input
                   type="number"
                   {...field}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  onChange={(e) => field.onChange(Number(e.target.value)) }
+                  disabled={isFree}
                 />
               </FormControl>
               <FormMessage />
@@ -146,7 +175,6 @@ export default function EditTycketTypeForm({
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="selectedDates"

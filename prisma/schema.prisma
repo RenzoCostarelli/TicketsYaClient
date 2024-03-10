@@ -115,6 +115,8 @@ model TicketType {
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   orders        Order[]
+  isFree        Boolean      @default(false)
+
 
   @@map("ticket_types")
 }

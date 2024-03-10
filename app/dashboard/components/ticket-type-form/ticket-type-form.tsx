@@ -34,6 +34,7 @@ import { createTicketType, updateTicketType } from "@/lib/actions";
 import { DatesType, TicketType, UpdateTicketTypeType } from "@/types/tickets";
 import { randomUUID } from "crypto";
 import { useToast } from "@/components/ui/use-toast";
+import { useState } from "react";
 
 const FormSchema = z.object({
   selectedDates: z
@@ -44,6 +45,7 @@ const FormSchema = z.object({
   title: z.string(),
   price: z.number(),
   quantity: z.number(),
+  isFree: z.boolean(),
   status: z.enum(["ACTIVE", "INACTIVE", "ENDED", "DELETED"]),
   // startDate: z.date(),
   endDate: z.date().optional(),
@@ -52,6 +54,8 @@ const FormSchema = z.object({
 export default function TycketTypeForm({ evento }: { evento: Evento }) {
   const { toast } = useToast();
   const parsedEventDates = JSON.parse(evento.dates);
+  const [isFree, setIsFree] = useState<boolean>(false);
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -60,17 +64,22 @@ export default function TycketTypeForm({ evento }: { evento: Evento }) {
       price: 0 as number,
       status: "ACTIVE",
       quantity: 0,
+      isFree: false,
       // startDate: undefined,
       endDate: undefined,
     },
   });
   function onSubmit(values: z.infer<typeof FormSchema>) {
-    console.log("values", values);
     const formatedDates = values.selectedDates.map((date, index) => ({
       id: index,
       date: date,
     }));
     const stringDates = JSON.stringify(formatedDates);
+
+    if (isFree) {
+      values.price = 0;
+    }
+    
     const data: TicketType = {
       title: values.title,
       price: values.price as number,
@@ -81,11 +90,13 @@ export default function TycketTypeForm({ evento }: { evento: Evento }) {
       eventId: evento.id,
       position: 0,
       type: "NORMAL",
+      isFree: values.isFree
     };
 
     try {
       createTicketType(data);
       form.reset();
+      setIsFree(false)
       toast({
         title: "Tipo de ticket creado!",
       });
@@ -115,6 +126,24 @@ export default function TycketTypeForm({ evento }: { evento: Evento }) {
         />
         <FormField
           control={form.control}
+          name="isFree"
+          render={({ field }) => (
+            <FormItem>              
+              <FormControl>
+                <Checkbox 
+                    checked={field.value}
+                    onCheckedChange={(e) => {
+                      setIsFree(!field.value);
+                      return field.onChange(!field.value)
+                    }}
+                  />
+              </FormControl>
+              <FormLabel>Gratis</FormLabel>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
           name="price"
           render={({ field }) => (
             <FormItem>
@@ -124,6 +153,7 @@ export default function TycketTypeForm({ evento }: { evento: Evento }) {
                   type="number"
                   {...field}
                   onChange={(e) => field.onChange(Number(e.target.value))}
+                  disabled={isFree}
                 />
               </FormControl>
               <FormMessage />

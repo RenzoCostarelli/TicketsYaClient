@@ -18,6 +18,7 @@ export interface TicketType {
   dates?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
+  isFree?: boolean;
 }
 
 // LOL
@@ -29,6 +30,7 @@ export type UpdateTicketTypeType = {
   status: TicketTypeStatus;
   // startDate: z.date(),
   endDate: Date | undefined;
+  isFree?: boolean;
 };
 
 export type DatesType = {

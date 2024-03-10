@@ -7,6 +7,7 @@ import { generateClientDropzoneAccept } from "uploadthing/client";
 
 import { ImagePlus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 type FileUploaderProps = {
   onFieldChange: (url: string) => void;
@@ -23,11 +24,14 @@ export function FileUploader({
   setFiles,
   setDeleteImageValue,
 }: FileUploaderProps) {
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    setFiles(acceptedFiles);
-    onFieldChange(convertFileToUrl(acceptedFiles[0]));
-    setDeleteImageValue(false);
-  }, []);
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      setFiles(acceptedFiles);
+      onFieldChange(convertFileToUrl(acceptedFiles[0]));
+      setDeleteImageValue(false);
+    },
+    [setFiles, onFieldChange, setDeleteImageValue]
+  );
 
   const handleDeleteImage = async (url: string) => {
     setFiles([]);
@@ -44,43 +48,45 @@ export function FileUploader({
 
   return (
     <>
-      {imageUrl ? (
-        <Button variant="secondary"
-          onClick={() => handleDeleteImage(imageUrl)}
-        >
-          <Trash2 className="h-6 w-6" />
-        </Button>
-      ) : (
-        ""
-      )}
       <div
         {...getRootProps()}
         className="flex-center border bg-dark-3 flex cursor-pointer flex-col overflow-hidden rounded-xl bg-grey-50"
       >
-        <input {...getInputProps()} className="cursor-pointer" type="file"/>
-
-        {imageUrl ? (
-          <div className="flex h-full w-full flex-1 justify-center ">
-            <img
-              src={imageUrl}
-              alt="image"
-              width={250}
-              height={250}
-              className="w-full object-cover object-center"
-            />
-          </div>
-        ) : (
-          <div className="flex-center text-center flex-col py-5 text-grey-500">
-            <ImagePlus
-              className="m-auto"
-              size={40}
-              strokeWidth={1}
-              absoluteStrokeWidth
-            />
-            <h3 className="mb-2 mt-2">Subí tu foto max. "1MB"</h3>
-            <p className="p-medium-12">SVG, PNG, JPG</p>
-          </div>
-        )}
+        <div className="flex-center text-center flex-col py-5 text-grey-500 relative min-h-[145px]">
+          {imageUrl ? (
+            <>
+              <Image
+                src={imageUrl}
+                alt="image"
+                fill
+                className="object-cover aspect-square"
+              />
+              <Button
+                variant="secondary"
+                onClick={() => handleDeleteImage(imageUrl)}
+                className="absolute top-2 right-2"
+              >
+                <Trash2 className="h-6 w-6" />
+              </Button>
+            </>
+          ) : (
+            <>
+              <input
+                {...getInputProps()}
+                className="cursor-pointer"
+                type="file"
+              />
+              <ImagePlus
+                className="m-auto"
+                size={40}
+                strokeWidth={1}
+                absoluteStrokeWidth
+              />
+              <h3 className="mb-2 mt-2">Tamaño máximo. {"1MB"}</h3>
+              <p className="p-medium-12">PNG, JPG</p>
+            </>
+          )}
+        </div>
       </div>
     </>
   );

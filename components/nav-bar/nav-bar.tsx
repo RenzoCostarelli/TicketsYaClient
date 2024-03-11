@@ -23,7 +23,7 @@ import { User } from "@/types/user";
 export default function NavBar({ user }: { user?: User }) {
   const { data: session } = useSession();
   return (
-    <header className="flex h-20 w-full items-center px-4 md:px-6">
+    <header className="flex h-20 w-full items-center px-4 md:px-6 bg-neutral-950 text-white">
       <Link className="mr-6" href="/">
         <TicketIcon className="h-6 w-6" />
         <span className="sr-only">Mega Archi ticket Inc</span>

@@ -24,7 +24,7 @@ export default function TicketTypeAccordion({
       {ticketTypes.length > 0 ? (
         <Accordion collapsible type="single">
           {ticketTypes.map((ticket) => (
-            <AccordionItem value={ticket.id} key={ticket.id}>
+            <AccordionItem value={ticket.id as string} key={ticket.id}>
               <AccordionTrigger>{ticket.title}</AccordionTrigger>
               <AccordionContent>
                 <EditTycketTypeForm evento={evento} ticket={ticket} />

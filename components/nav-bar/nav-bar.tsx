@@ -6,10 +6,16 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 
 import { User } from "@/types/user";
-import DropDownMenu from "@/components/dropdown-menu/dropdown-menu";
+import AdminDropDown from "../admin-dropdown/admin-dropdown";
+import { Session } from "next-auth";
 
-export default function NavBar({ user }: { user?: User }) {
-  const { data: session } = useSession();
+export default function NavBar({
+  user,
+  session,
+}: {
+  user?: User;
+  session: Session;
+}) {
   return (
     <header className="flex h-20 w-full items-center px-4 md:px-6 bg-neutral-950 text-white">
       <Link className="mr-6" href="/">
@@ -32,9 +38,7 @@ export default function NavBar({ user }: { user?: User }) {
           Ingresar/Registrarse
         </Button>
       )}
-      {session && (
-        <DropDownMenu user={user} />
-      )}
+      {session && <AdminDropDown user={user as User} session={session} />}
     </header>
   );
 }

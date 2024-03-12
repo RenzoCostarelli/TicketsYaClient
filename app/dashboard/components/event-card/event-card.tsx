@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   Card,
@@ -21,8 +21,7 @@ import { Evento } from "@/types/event";
 import { deleteEvent } from "@/lib/actions";
 import { toast } from "@/components/ui/use-toast";
 
-export default function EventCard({ evento  }: { evento: Evento }) {
-  
+export default function EventCard({ evento }: { evento: Evento }) {
   const handleDeleteEvent = () => {
     deleteEvent(evento.id)
       .then(() => {
@@ -43,13 +42,15 @@ export default function EventCard({ evento  }: { evento: Evento }) {
     <>
       <Card className="w-full max-w-xl" key={evento.id}>
         <CardHeader className="flex flex-row items-center gap-2">
-          <Image
-            src={evento.image || ""}
-            alt="text"
-            width={100}
-            height={100}
-            style={{ objectFit: "cover", aspectRatio: 1 }}
-          />
+          {evento.image && (
+            <Image
+              src={evento.image || ""}
+              alt="text"
+              width={100}
+              height={100}
+              style={{ objectFit: "cover", aspectRatio: 1 }}
+            />
+          )}
           <div className="grid gap-1">
             <CardTitle>{evento.title}</CardTitle>
             <CardDescription>{evento.description}</CardDescription>

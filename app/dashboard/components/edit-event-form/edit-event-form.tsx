@@ -5,6 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { updateEvent } from "@/lib/actions";
 import { useState } from "react";
+import Autocomplete from "react-google-autocomplete";
+
 import {
   Form,
   FormControl,
@@ -186,19 +188,28 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
             )}
           />
           <FormField
-            control={form.control}
-            name="address"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Dirección</FormLabel>
-                <FormControl>
-                  <Input placeholder="Dirección del evento" {...field} />
-                </FormControl>
+          control={form.control}
+          name="address"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Dirección</FormLabel>
+              <FormControl>
+                <Autocomplete
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  apiKey={process.env.GOOGLE_MAPS_API_KEY}
+                  onPlaceSelected={(place) => field.onChange(place.formatted_address)}
+                  options={{
+                    types: ["geocode"],
+                    componentRestrictions: { country: "ar" },
+                  }}
+                  defaultValue={field.value}
+                />
+              </FormControl>
 
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
           <Label>Fechas</Label>
           <DatesPicker
             dateTimeSelections={dateTimeSelections}

@@ -1,7 +1,7 @@
 "use client";
 
 import { TicketIcon } from "lucide-react";
-import { useSession, signOut, signIn } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
 import Link from "next/link";
 import { Button } from "../ui/button";
 

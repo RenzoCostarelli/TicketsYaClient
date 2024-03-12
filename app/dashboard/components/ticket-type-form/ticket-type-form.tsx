@@ -17,7 +17,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Loader2 } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -55,6 +55,7 @@ export default function TycketTypeForm({ evento }: { evento: Evento }) {
   const { toast } = useToast();
   const parsedEventDates = JSON.parse(evento.dates);
   const [isFree, setIsFree] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -70,6 +71,7 @@ export default function TycketTypeForm({ evento }: { evento: Evento }) {
     },
   });
   function onSubmit(values: z.infer<typeof FormSchema>) {
+    setIsLoading(true);
     const formatedDates = values.selectedDates.map((date, index) => ({
       id: index,
       date: date,
@@ -97,6 +99,7 @@ export default function TycketTypeForm({ evento }: { evento: Evento }) {
       createTicketType(data);
       form.reset();
       setIsFree(false)
+      setIsLoading(false);
       toast({
         title: "Tipo de ticket creado!",
       });
@@ -282,7 +285,16 @@ export default function TycketTypeForm({ evento }: { evento: Evento }) {
             </FormItem>
           )}
         />
-        <Button type="submit">Guardar ticket</Button>
+        <Button type="submit" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Loading...
+              </>
+            ) : (
+              "Guardar ticket"
+            )}
+          </Button>
       </form>
     </Form>
   );

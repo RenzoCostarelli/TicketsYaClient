@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
-import { Button } from "../ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { signOut } from "next-auth/react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,30 +11,29 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { useSession, signOut, signIn } from "next-auth/react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
-import { User } from "@/types/user";
+import { Button } from "../ui/button";
 import { Session } from "next-auth";
+import { User } from "@/types/user";
 
-export default function AvatarDropDown({
+export default function AdminDropDown({
   user,
   session,
 }: {
-  user?: User;
+  user: User;
   session: Session;
 }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="relative" asChild>
         <Avatar className="h-9 w-9 ml-4 cursor-pointer relative">
-          <AvatarImage alt="@shadcn" src={session!.user?.image as string} />
-          <AvatarFallback>{session!.user?.name?.charAt(0)}</AvatarFallback>
+          <AvatarImage alt="@shadcn" src={session.user?.image as string} />
+          <AvatarFallback>{session.user?.name?.charAt(0)}</AvatarFallback>
           {!user?.mpAccessToken && (
             <TooltipProvider>
               <Tooltip>

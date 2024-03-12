@@ -20,11 +20,12 @@ export default async function DashboardLayout({
     redirect("/");
   }
   return (
-    <main>
-      <div className="flex flex-col items-center gap-8 p-4 md:p-8 max-w-2xl mx-auto">
+    <>
+      {/* Agregar navecaion del dashboard aca */}
+      <div className="flex flex-col items-center gap-8 p-4 md:p-8 mx-auto w-full">
         {children}
       </div>
       <Toaster />
-    </main>
+    </>
   );
 }

@@ -6,7 +6,7 @@ export default async function Home() {
   const eventos = await getAllEvents();
 
   return (
-    <section>
+    <section className="max-w-5xl">
       <h1 className="mb-14 scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-7xl">
         PROXIMOS EVENTOS
       </h1>

@@ -1,18 +1,14 @@
-import { useSession } from "next-auth/react";
-import MercadoPagoForm from "../mercado-pago-form/mercado-pago-form";
+import MercadoPagoForm from "../../mercado-pago-form/mercado-pago-form";
 import { getUserByEmail } from "@/lib/api/users";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-export default async function Integraciones() {
+export default async function MercadoPago() {
   const session = await getServerSession(authOptions);
   const user = await getUserByEmail(session?.user?.email as string);
   return (
     <>
-      <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
-        Integraciones
-      </h1>
       {!user.mpAccessToken && (
         <Alert variant="destructive">
           <AlertTitle>Atención!</AlertTitle>

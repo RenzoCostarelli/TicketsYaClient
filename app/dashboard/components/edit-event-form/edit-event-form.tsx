@@ -23,6 +23,7 @@ import Link from "next/link";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { FileUploader } from "@/app/dashboard/components/file-uploader/file-uploader";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   title: z.string().min(5, {
@@ -40,6 +41,7 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
   const [dateTimeSelections, setDateTimeSelections] = useState(parsedDates);
   const [files, setFiles] = useState<File[]>([]);
   const [deleteImageValue, setDeleteImageValue] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { toast } = useToast();
 
   const { startUpload } = useUploadThing("profileImage");
@@ -87,12 +89,13 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
         body: JSON.stringify(url),
       });
     } catch (error) {
-      console.log("🚀 ~ deleteImage ~ error:", error);      
+      console.log("🚀 ~ deleteImage ~ error:", error);
     }
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const parsedDates = JSON.stringify(dateTimeSelections);
+    setIsLoading(true);
 
     if (files.length > 0) {
       const uploadedImages = await startUpload(files);
@@ -101,33 +104,37 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
         values.image = uploadedImages[0].url;
       }
     }
-    
-    if(deleteImageValue) {
-      values.image = "";
-    }    
 
-    updateEvent({
-      title: values.title,
-      description: values.description,
-      location: values.location,
-      address: values.address,
-      image: values.image,
-      dates: parsedDates,
-      userId: evento.userId,
-      status: "ACTIVE",
-    }, evento.id)
-    .then(() => {
-      toast({
-        title: "Evento editado!",
+    if (deleteImageValue) {
+      values.image = "";
+    }
+
+    updateEvent(
+      {
+        title: values.title,
+        description: values.description,
+        location: values.location,
+        address: values.address,
+        image: values.image,
+        dates: parsedDates,
+        userId: evento.userId,
+        status: "ACTIVE",
+      },
+      evento.id
+    )
+      .then(() => {
+        toast({
+          title: "Evento editado!",
+        });
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.log("error editando el evento", error);
+        toast({
+          variant: "destructive",
+          title: "Error editando el evento",
+        });
       });
-    })
-    .catch((error) => {
-      console.log("error editando el evento", error);
-      toast({
-        variant: "destructive",
-        title: "Error editando el evento",
-      });
-    });
   }
 
   return (
@@ -209,15 +216,24 @@ export default function EditEventForm({ evento }: { evento: Evento }) {
                   <FileUploader
                     onFieldChange={field.onChange}
                     imageUrl={field.value}
-                    setFiles={setFiles} 
-                    setDeleteImageValue={setDeleteImageValue}                  
-                    />
+                    setFiles={setFiles}
+                    setDeleteImageValue={setDeleteImageValue}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit">Guardar evento</Button>
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Loading...
+              </>
+            ) : (
+              "Guardar evento"
+            )}
+          </Button>
           <Link href={`/dashboard/evento/ticket-types/${evento.id}`}>
             Tipo de tickets
           </Link>

@@ -25,6 +25,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { FileUploader } from "@/app/dashboard/components/file-uploader/file-uploader";
 import { useUploadThing } from "@/lib/utils";
 import { Evento } from "@/types/event";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   title: z.string().min(5, {
@@ -44,6 +45,7 @@ export default function CreateEventForm({ userId }: { userId: string }) {
   ]);
   const [files, setFiles] = useState<File[]>([]);
   const [deleteImageValue, setDeleteImageValue] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { startUpload } = useUploadThing("profileImage");
   const { toast } = useToast();
@@ -86,13 +88,14 @@ export default function CreateEventForm({ userId }: { userId: string }) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const parsedDates = JSON.stringify(dateTimeSelections);
+    setIsLoading(true);
 
     if (files.length > 0) {
       const uploadedImages = await startUpload(files);
       if (uploadedImages) {
         values.image = uploadedImages[0].url;
       }
-    } 
+    }
 
     createEvent({
       title: values.title,
@@ -102,10 +105,11 @@ export default function CreateEventForm({ userId }: { userId: string }) {
       image: values.image,
       dates: parsedDates,
       userId: userId,
-      status: "ACTIVE"
+      status: "ACTIVE",
     })
       .then(() => {
         form.reset();
+        setIsLoading(false);
         toast({
           title: "Evento creado!",
         });
@@ -204,7 +208,16 @@ export default function CreateEventForm({ userId }: { userId: string }) {
             </FormItem>
           )}
         />
-        <Button type="submit">Guardar evento</Button>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Loading...
+            </>
+          ) : (
+            "Guardar evento"
+          )}
+        </Button>
       </form>
     </Form>
   );

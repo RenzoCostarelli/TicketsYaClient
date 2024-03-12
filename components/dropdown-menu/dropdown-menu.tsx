@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 
@@ -10,10 +10,9 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import DropDownAvatar from "@/components/dropdown-avatar/dropdown-avatar";
+import DropDownButton from "@/components/dropdown-avatar/dropdown-avatar";
 
 /**
  * Renders a dropdown menu with the user's profile and options.
@@ -25,7 +24,7 @@ export default function DropDownMenu({ user }: { user?: User }) {
 
   return (
     <DropdownMenu>
-      <DropDownAvatar user={user} />
+      <DropDownButton user={user} />
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>{session?.user?.name}</DropdownMenuLabel>
         <DropdownMenuSeparator />

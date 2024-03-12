@@ -15,9 +15,9 @@ import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 /**
  * Renders an avatar with a drop down menu for the user's profile options.
  * @param user - The user object to display.
- * @returns The DropDownAvatar component.
+ * @returns The DropDownButton component.
  */
-export default function DropDownAvatar({ user }: { user?: User }) {
+export default function DropDownButton({ user }: { user?: User }) {
   const { data: session } = useSession();
   return (
     <DropdownMenuTrigger className="relative" asChild>

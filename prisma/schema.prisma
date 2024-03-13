@@ -197,6 +197,7 @@ model DiscountCode {
   createdAt      DateTime    @default(now())
   expiresAt      DateTime
   updatedAt      DateTime    @updatedAt
+  status         GlobalStatus @default(ACTIVE)
   event          Event?      @relation(fields: [eventId], references: [id], onDelete: SetNull)
   ticketType     TicketType? @relation(fields: [ticketTypeId], references: [id], onDelete: SetNull)
 

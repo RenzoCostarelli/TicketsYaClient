@@ -21,35 +21,9 @@ export default async function Dashboard() {
   const session = await getServerSession(authOptions);
   const { id } = await getUserByEmail(session?.user?.email as string);
   const eventos = await getEventsByUserId(id);
-  
+
   return (
     <>
-      {/* <nav className="w-full max-w-md flex justify-around mb-8">
-        <Link
-          className="text-lg font-semibold text-gray-700 hover:text-gray-900"
-          href="#"
-        >
-          Eventos
-        </Link>
-        <Link
-          className="text-lg font-semibold text-gray-700 hover:text-gray-900"
-          href="#"
-        >
-          Tipos de entradas
-        </Link>
-        <Link
-          className="text-lg font-semibold text-gray-700 hover:text-gray-900"
-          href="#"
-        >
-          Estadisticas
-        </Link>
-        <Link
-          className="text-lg font-semibold text-gray-700 hover:text-gray-900"
-          href="#"
-        >
-          Perfil
-        </Link>
-      </nav> */}
       <Button asChild variant="secondary">
         <Link href={"/dashboard/nuevo-evento"}>
           <Plus className="mr-2" /> Nuevo evento

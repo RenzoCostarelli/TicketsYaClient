@@ -21,7 +21,7 @@ export default function EventCard({ evento }: { evento: HomeCard }) {
       <Card className="rounded-lg shadow-md">
         <div className="aspect-[16/9] relative">
           <Image
-            src={evento.image || ''}
+            src={evento.image || ""}
             alt="text"
             fill
             style={{ objectFit: "cover" }}
@@ -34,7 +34,7 @@ export default function EventCard({ evento }: { evento: HomeCard }) {
           <p className="text-sm font-medium">{groupedDates}</p>
 
           <CardTitle>{evento.title}</CardTitle>
-          <CardDescription>{evento.description}</CardDescription>
+          {/* <CardDescription>{evento.description}</CardDescription> */}
         </CardContent>
         <CardFooter className="flex justify-end gap-2 p-4">
           <Button className="w-full">

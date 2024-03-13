@@ -41,9 +41,11 @@ model User {
   emailVerified DateTime?
   image         String?
   mpAccessToken String?
+  superAdmin    Boolean   @default(false)
   accounts      Account[]
   sessions      Session[]
   events        Event[]
+  notifications Notification[]
 }
 
 model VerificationToken {
@@ -73,6 +75,7 @@ model Event {
   endDate         DateTime?
   status          GlobalStatus
   userId          String
+  discountCode    DiscountCode[]
   ticketTypes     TicketType[]
   orders          Order[]
   tickets         TicketOrder[]
@@ -110,6 +113,7 @@ model TicketType {
   endDate       DateTime?
   quantity      Int
   position      Int
+  discountCode  DiscountCode[]
   event         Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
   dates         String?      // JSON string para almacenar múltiples fechas de abonos
   createdAt     DateTime     @default(now())
@@ -179,4 +183,30 @@ model ValidatorToken {
   event   Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
   @@map("validator_tokens")
+}
+
+model DiscountCode {
+  id             String      @id @default(cuid())
+  eventId        String?     // Opcional, vincula con el evento
+  ticketTypeId   String?     // Opcional, vincula con el tipo de ticket
+  code           String
+  createdAt      DateTime    @default(now())
+  expiresAt      DateTime
+  updatedAt      DateTime    @updatedAt
+  event          Event?      @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  ticketType     TicketType? @relation(fields: [ticketTypeId], references: [id], onDelete: SetNull)
+
+  @@map("discount_codes")
+}
+
+model Notification {
+  id                 String   @id @default(cuid())
+  userId             String   // Relaciona con el usuario
+  eventSoldOut       Boolean  @default(false) // Notifica si un evento se ha agotado
+  ticketTypeSoldOut  Boolean  @default(false) // Notifica si un tipo de ticket se ha agotado
+  eventToBeSoldOut   Boolean  @default(false) // Notifica si un evento está por agotarse
+  ticketTypePublished Boolean @default(false) // Notifica si se ha publicado un nuevo tipo de ticket
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
 }

@@ -51,23 +51,31 @@ export default function AdminDropDown({
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel>{session.user?.name}</DropdownMenuLabel>
+        <DropdownMenuItem asChild>
+          <Link
+            href={"/dashboard/configuracion/perfil"}
+            className="font-bold cursor-pointer"
+          >
+            {session.user?.name}
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href={"/dashboard/perfil"}>Perfil</Link>
+          <Link href={"/dashboard"} className="cursor-pointer">
+            Panel
+          </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href={"/dashboard"}>Panel</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
+        {/* <DropdownMenuItem asChild>
           <Link href={"/dashboard/integraciones"} className="relative">
             Integraciones
             {!user?.mpAccessToken && <div className="dot-notification"></div>}
           </Link>
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <Button onClick={() => signOut()}>Cerrar sesión</Button>
+          <Button onClick={() => signOut()} className="cursor-pointer">
+            Cerrar sesión
+          </Button>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

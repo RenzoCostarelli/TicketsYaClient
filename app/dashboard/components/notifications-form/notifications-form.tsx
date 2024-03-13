@@ -18,14 +18,24 @@ import {
 import { toast } from "@/components/ui/use-toast";
 
 const FormSchema = z.object({
-  soldOut: z.boolean().default(false).optional(),
+  eventSoldOut: z.boolean().default(false).optional(),
+  ticketTypeSoldOut: z.boolean().default(false).optional(),
+  eventToBeSoldOut: z.boolean().default(false).optional(),
+  ticketTypePublished: z.boolean().default(false).optional(),
 });
 
-export default function NotificationsForm() {
+export default function NotificationsForm({
+  notifications,
+}: {
+  notifications: EmailNotification[];
+}) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      soldOut: true,
+      eventSoldOut: notifications[0].eventSoldOut,
+      ticketTypeSoldOut: notifications[0].ticketTypeSoldOut,
+      eventToBeSoldOut: notifications[0].eventToBeSoldOut,
+      ticketTypePublished: notifications[0].ticketTypePublished,
     },
   });
 
@@ -45,7 +55,7 @@ export default function NotificationsForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
           control={form.control}
-          name="soldOut"
+          name="eventSoldOut"
           render={({ field }) => (
             <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
               <FormControl>
@@ -62,7 +72,7 @@ export default function NotificationsForm() {
         />
         <FormField
           control={form.control}
-          name="soldOut"
+          name="ticketTypeSoldOut"
           render={({ field }) => (
             <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
               <FormControl>
@@ -79,7 +89,7 @@ export default function NotificationsForm() {
         />
         <FormField
           control={form.control}
-          name="soldOut"
+          name="eventToBeSoldOut"
           render={({ field }) => (
             <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
               <FormControl>
@@ -96,7 +106,7 @@ export default function NotificationsForm() {
         />
         <FormField
           control={form.control}
-          name="soldOut"
+          name="ticketTypePublished"
           render={({ field }) => (
             <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
               <FormControl>

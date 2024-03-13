@@ -4,6 +4,7 @@ import * as Eventos from "@/lib/api/eventos";
 import * as Orders from "@/lib/api/orders";
 import * as TicketTypes from "@/lib/api/ticket-types";
 import * as Users from "@/lib/api/users";
+import * as Notifications from "@/lib/api/notifications";
 import * as TikcetOrders from "@/lib/api/ticket-orders";
 import { EventStatus } from "@/types/event";
 import { Product } from "@/types/product";
@@ -58,7 +59,7 @@ export async function updateEvent(data: Evento, eventId: string) {
 
 export async function deleteEvent(eventId: string) {
   try {
-    const data = { status : "DELETED"}
+    const data = { status: "DELETED" };
     const result = await Eventos.updateEvent(eventId, data as Evento);
 
     revalidatePath(`/dashboard`);
@@ -237,11 +238,9 @@ export async function getMercadPagoUrl(
 
 export async function payOrderHandler(orderId: string) {
   const order = await getOrderById(orderId);
-  console.log("order", order);
   if (!order) return;
 
   const dates = JSON.parse(order.ticketType.dates!);
-  if (!dates) return;
 
   updateOrder(
     {
@@ -275,5 +274,14 @@ export async function createTicketOrder(tickets: TicketOrderType[]) {
   } catch (error) {
     console.log("Error creando tickets:", error);
     throw new Error("Error tickets");
+  }
+}
+export async function getAllNotifications(userId: string) {
+  try {
+    const result = await Notifications.getAllNotifications(userId);
+    console.log(result);
+    return result;
+  } catch (error) {
+    console.log("Error get notificaiones");
   }
 }

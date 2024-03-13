@@ -22,10 +22,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { toast } from "@/components/ui/use-toast";
 import { createOrder } from "@/lib/actions";
 import { datesFormater } from "@/lib/utils";
-import MpButtonServer from "../mp-button/mp-button-server";
+import { Input } from "../ui/input";
 
 export type TicketType = {
   id: string;
@@ -50,6 +49,7 @@ const FormSchema = z.object({
     required_error: "Por favor selecciona un tipo de ticket.",
   }),
   quantity: z.string(),
+  code: z.string().optional(),
 });
 
 export default function TicketTypePicker({
@@ -62,7 +62,6 @@ export default function TicketTypePicker({
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
-
   function onSubmit(data: z.infer<typeof FormSchema>) {
     const orderData = {
       ticketTypeId: data.ticketType,
@@ -142,6 +141,29 @@ export default function TicketTypePicker({
                     <SelectItem value="9">9</SelectItem>
                     <SelectItem value="10">10</SelectItem>
                   </SelectContent>
+                </Select>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className="w-full">
+          <FormField
+            control={form.control}
+            name="code"
+            render={({ field }) => (
+              <FormItem>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <Input
+                      placeholder="Tengo un codigo de descuento"
+                      {...field}
+                    />
+                  </FormControl>
                 </Select>
 
                 <FormMessage />

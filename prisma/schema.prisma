@@ -106,6 +106,7 @@ model TicketType {
   date          DateTime?
   time          String?
   price         Float
+  discount      Float?        @default(0)// porcentaje de descuento
   eventId       String
   status        TicketTypeStatus
   type          TicketTypes
@@ -131,7 +132,10 @@ model Order {
   lastName      String? 
   dni           String?
   email         String?
-  phone         String?  
+  phone         String?
+  totalPrice    Float?
+  hasPromo      Boolean     @default(false) // si tiene descuento o 2x1
+  hasCode       Boolean     @default(false) // si aplica codigo de descuento
   status        OrderStatus 
   ticketTypeId  String
   eventId       String

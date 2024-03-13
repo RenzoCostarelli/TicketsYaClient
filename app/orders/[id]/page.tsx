@@ -57,7 +57,6 @@ export default async function Evento({ params }: { params: { id: string } }) {
         </div>
       </section>
 
-      <OrderTimeOut order={order as Order} />
       <section className="w-full py-6 md:py-12">
         <h2 className="text-2xl mb-10 font-bold tracking-tighter sm:text-2xl md:text-3xl text-center">
           Datos de tu orden
@@ -74,6 +73,7 @@ export default async function Evento({ params }: { params: { id: string } }) {
           </div>
         </div>
       </section>
+      <OrderTimeOut order={order as Order} />
       <section className="w-full py-6 md:py-12">
         <h2 className="text-2xl mb-10 font-bold tracking-tighter sm:text-2xl md:text-3xl text-center">
           Tus datos

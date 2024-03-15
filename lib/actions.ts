@@ -6,6 +6,7 @@ import * as TicketTypes from "@/lib/api/ticket-types";
 import * as Users from "@/lib/api/users";
 import * as Notifications from "@/lib/api/notifications";
 import * as TikcetOrders from "@/lib/api/ticket-orders";
+import * as Code from "@/lib/api/descuento-code";
 import { EventStatus } from "@/types/event";
 import { Product } from "@/types/product";
 import {
@@ -17,6 +18,7 @@ import {
 import MercadoPagoConfig, { Preference } from "mercadopago";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { DiscountCode } from "@/types/discount-code";
 // Type temporal
 export type Evento = {
   title: string;
@@ -283,5 +285,57 @@ export async function getAllNotifications(userId: string) {
     return result;
   } catch (error) {
     console.log("Error get notificaiones");
+  }
+}
+
+export async function createDiscountCode(data: DiscountCode) {
+  let codeId = null;
+  console.log(data)
+  try {
+    const result = await Code.createDiscountCode(data);
+    console.log("Código creado:", result);
+    codeId = result.id;
+  } catch (error) {
+    console.log("Error creando el código:", error);
+    throw new Error("Error creando el código");
+  }
+  if (codeId) {
+    redirect(`/dashboard/codigos/${codeId}`);
+  }
+
+  revalidatePath("/dashboard");
+}
+
+export async function updateDiscountCode(data: DiscountCode, eventId: string) {
+  try {
+    const result = await Code.updateDiscountCode(eventId, data);
+    console.log("Evento editado:", result);
+    revalidatePath(`/dashboard/evento/${result.id}`);
+  } catch (error) {
+    console.log("Error editando el evento:", error);
+    throw new Error("Error editando el evento");
+  }
+}
+
+export async function deleteDiscountCode(eventId: string) {
+  try {
+    const data = { status: "DELETED" };
+    const result = await Code.updateDiscountCode(eventId, data as DiscountCode);
+
+    revalidatePath(`/dashboard`);
+    return result;
+  } catch (error) {
+    console.log("Error borrando el evento:", error);
+    throw new Error("Error editando el evento");
+  }
+}
+
+export async function getDiscountCodeById(eventId: string) {
+  try {
+    const result = await Code.getDiscountCodeById(eventId);
+    return result;
+  } catch (error) {
+    console.log("Error en getEventById:", error);
+    throw new Error("Error o");
   }
 }

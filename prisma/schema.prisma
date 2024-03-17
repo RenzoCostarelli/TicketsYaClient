@@ -45,7 +45,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   events        Event[]
-  notifications Notification[]
+  configuration UserConfiguration[]
 }
 
 model VerificationToken {
@@ -204,14 +204,14 @@ model DiscountCode {
   @@map("discount_codes")
 }
 
-model Notification {
-  id                 String   @id @default(cuid())
-  userId             String   // Relaciona con el usuario
-  eventSoldOut       Boolean  @default(false) // Notifica si un evento se ha agotado
-  ticketTypeSoldOut  Boolean  @default(false) // Notifica si un tipo de ticket se ha agotado
-  eventToBeSoldOut   Boolean  @default(false) // Notifica si un evento está por agotarse
-  ticketTypePublished Boolean @default(false) // Notifica si se ha publicado un nuevo tipo de ticket
+model UserConfiguration {
+  id                              String   @id @default(cuid())
+  userId                          String   @unique
+  mpAccessToken                   String?
+  eventSoldOutNotification        Boolean  @default(false) // Notifica si un evento se ha agotado
+  ticketTypeSoldOutNotification   Boolean  @default(false) // Notifica si un tipo de ticket se ha agotado
+  eventToBeSoldOutNotification    Boolean  @default(false) // Notifica si un evento está por agotarse
+  ticketTypePublishedNotification Boolean  @default(false) // Notifica si se ha publicado un nuevo tipo de ticket
   user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("notifications")
+  @@map("user_configurations")
 }

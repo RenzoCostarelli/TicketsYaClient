@@ -3,13 +3,15 @@ import { getUserByEmail } from "@/lib/api/users";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { getAllUserConfiguration } from "@/lib/actions";
 
 export default async function MercadoPago() {
   const session = await getServerSession(authOptions);
-  const user = await getUserByEmail(session?.user?.email as string);
+  const { id } = await getUserByEmail(session?.user?.email as string);
+  const userConfiguration = (await getAllUserConfiguration(id)) || [];
   return (
     <>
-      {!user.mpAccessToken && (
+      {!userConfiguration[0].mpAccessToken && (
         <Alert variant="destructive">
           <AlertTitle>Atención!</AlertTitle>
           <AlertDescription>
@@ -22,7 +24,7 @@ export default async function MercadoPago() {
         Mercado Pago
       </h2>
       <div className="bg-gray-100 p-5 rounded">
-        <MercadoPagoForm user={user} />
+        <MercadoPagoForm configuration={userConfiguration} />
       </div>
     </>
   );

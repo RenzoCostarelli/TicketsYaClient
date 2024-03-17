@@ -4,7 +4,7 @@ import * as Eventos from "@/lib/api/eventos";
 import * as Orders from "@/lib/api/orders";
 import * as TicketTypes from "@/lib/api/ticket-types";
 import * as Users from "@/lib/api/users";
-import * as Notifications from "@/lib/api/notifications";
+import * as Configuration from "@/lib/api/user-configuration";
 import * as TikcetOrders from "@/lib/api/ticket-orders";
 import { EventStatus } from "@/types/event";
 import { Product } from "@/types/product";
@@ -276,12 +276,24 @@ export async function createTicketOrder(tickets: TicketOrderType[]) {
     throw new Error("Error tickets");
   }
 }
-export async function getAllNotifications(userId: string) {
+export async function getAllUserConfiguration(userId: string) {
   try {
-    const result = await Notifications.getAllNotifications(userId);
+    const result = await Configuration.getAllUserConfiguration(userId);
     console.log(result);
     return result;
   } catch (error) {
     console.log("Error get notificaiones");
+  }
+}
+
+export async function updateUserConfiguration(data: any, configId: string) {
+  console.log(data);
+  try {
+    const result = await Configuration.updateUserConfiguration(data, configId);
+    console.log("Configuracion editada:", result);
+    revalidatePath(`/dashboard/configuracion`);
+  } catch (error) {
+    console.log("Error editando la configuracion:", error);
+    throw new Error("Error editando la configuracion");
   }
 }

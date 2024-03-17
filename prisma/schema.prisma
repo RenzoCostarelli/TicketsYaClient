@@ -40,7 +40,6 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
-  mpAccessToken String?
   superAdmin    Boolean   @default(false)
   accounts      Account[]
   sessions      Session[]

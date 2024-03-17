@@ -8,6 +8,13 @@ export async function getAllUserConfiguration(userId: string) {
   });
 }
 
+export async function createUserConfiguration(userId: string) {
+  const data = {
+    userId,
+  };
+  return await db.userConfiguration.create({ data });
+}
+
 export async function updateUserConfiguration(
   configData: Partial<UserConfiguration>,
   configId: string

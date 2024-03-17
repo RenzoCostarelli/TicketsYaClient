@@ -270,7 +270,6 @@ export async function payOrderHandler(orderId: string) {
 export async function createTicketOrder(tickets: TicketOrderType[]) {
   try {
     const result = await TikcetOrders.createTicketOrder(tickets);
-    console.log("Tickets creados:", result);
   } catch (error) {
     console.log("Error creando tickets:", error);
     throw new Error("Error tickets");
@@ -279,7 +278,6 @@ export async function createTicketOrder(tickets: TicketOrderType[]) {
 export async function getAllUserConfiguration(userId: string) {
   try {
     const result = await Configuration.getAllUserConfiguration(userId);
-    console.log(result);
     return result;
   } catch (error) {
     console.log("Error get notificaiones");

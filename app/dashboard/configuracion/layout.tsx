@@ -1,5 +1,10 @@
 import { Metadata } from "next";
 import SidebarNav from "./sidebar-nav";
+import { getUserByEmail } from "@/lib/api/users";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth";
+import { getAllUserConfiguration } from "@/lib/actions";
+import { createUserConfiguration } from "@/lib/api/user-configuration";
 
 export const metadata: Metadata = {
   title: "Configuración",
@@ -25,7 +30,15 @@ interface SettingsLayoutProps {
   children: React.ReactNode;
 }
 
-export default function SettingsLayout({ children }: SettingsLayoutProps) {
+export default async function SettingsLayout({
+  children,
+}: SettingsLayoutProps) {
+  const session = await getServerSession(authOptions);
+  const { id } = await getUserByEmail(session?.user?.email as string);
+  const userConfiguration = (await getAllUserConfiguration(id)) || [];
+  if (userConfiguration.length === 0) {
+    await createUserConfiguration(id);
+  }
   return (
     <>
       <div className="space-y-6 p-10 pb-16 w-full">

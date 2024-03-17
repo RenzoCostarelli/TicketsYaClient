@@ -72,7 +72,7 @@ export default function MercadoPagoForm({
               </FormControl>
               <FormDescription>
                 Aca va el access toekn{" "}
-                <Link href="/examples/forms">elo encontras aca</Link>.
+                <Link href="/examples/forms">lo encontras aca</Link>.
               </FormDescription>
               <FormMessage />
             </FormItem>

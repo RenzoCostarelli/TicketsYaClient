@@ -183,9 +183,9 @@ export async function updateUser(data: any, userEmail: string) {
 
 export async function getMercadoPagoTokenByUser(userId: string) {
   try {
-    const result = await Users.getUserById(userId);
+    const result = await Configuration.getAllUserConfiguration(userId);
     console.log(result);
-    return result.mpAccessToken;
+    return result[0].mpAccessToken;
   } catch (error) {}
 }
 

@@ -16,38 +16,42 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { toast } from "@/components/ui/use-toast";
+import { updateUserConfiguration } from "@/lib/actions";
 
 const FormSchema = z.object({
-  eventSoldOut: z.boolean().default(false).optional(),
-  ticketTypeSoldOut: z.boolean().default(false).optional(),
-  eventToBeSoldOut: z.boolean().default(false).optional(),
-  ticketTypePublished: z.boolean().default(false).optional(),
+  eventSoldOutNotification: z.boolean().default(false).optional(),
+  ticketTypeSoldOutNotification: z.boolean().default(false).optional(),
+  eventToBeSoldOutNotification: z.boolean().default(false).optional(),
+  ticketTypePublishedNotification: z.boolean().default(false).optional(),
 });
 
 export default function NotificationsForm({
-  notifications,
+  configuration,
 }: {
-  notifications: EmailNotification[];
+  configuration: UserConfiguration[];
 }) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      eventSoldOut: notifications[0].eventSoldOut,
-      ticketTypeSoldOut: notifications[0].ticketTypeSoldOut,
-      eventToBeSoldOut: notifications[0].eventToBeSoldOut,
-      ticketTypePublished: notifications[0].ticketTypePublished,
+      eventSoldOutNotification: configuration[0].eventSoldOutNotification,
+      ticketTypeSoldOutNotification:
+        configuration[0].ticketTypeSoldOutNotification,
+      eventToBeSoldOutNotification:
+        configuration[0].eventToBeSoldOutNotification,
+      ticketTypePublishedNotification:
+        configuration[0].ticketTypePublishedNotification,
     },
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+    try {
+      updateUserConfiguration(data, configuration[0].id as string);
+      toast({
+        title: "Preferencias de notifiaciónes actualizadas",
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return (
@@ -55,7 +59,7 @@ export default function NotificationsForm({
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
           control={form.control}
-          name="eventSoldOut"
+          name="eventSoldOutNotification"
           render={({ field }) => (
             <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
               <FormControl>
@@ -72,7 +76,7 @@ export default function NotificationsForm({
         />
         <FormField
           control={form.control}
-          name="ticketTypeSoldOut"
+          name="ticketTypeSoldOutNotification"
           render={({ field }) => (
             <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
               <FormControl>
@@ -89,7 +93,7 @@ export default function NotificationsForm({
         />
         <FormField
           control={form.control}
-          name="eventToBeSoldOut"
+          name="eventToBeSoldOutNotification"
           render={({ field }) => (
             <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
               <FormControl>
@@ -106,7 +110,7 @@ export default function NotificationsForm({
         />
         <FormField
           control={form.control}
-          name="ticketTypePublished"
+          name="ticketTypePublishedNotification"
           render={({ field }) => (
             <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
               <FormControl>

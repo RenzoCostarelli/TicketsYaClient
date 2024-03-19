@@ -4,7 +4,7 @@ import * as Eventos from "@/lib/api/eventos";
 import * as Orders from "@/lib/api/orders";
 import * as TicketTypes from "@/lib/api/ticket-types";
 import * as Users from "@/lib/api/users";
-import * as Notifications from "@/lib/api/notifications";
+import * as Configuration from "@/lib/api/user-configuration";
 import * as TikcetOrders from "@/lib/api/ticket-orders";
 import * as Code from "@/lib/api/descuento-code";
 import { EventStatus } from "@/types/event";
@@ -185,9 +185,9 @@ export async function updateUser(data: any, userEmail: string) {
 
 export async function getMercadoPagoTokenByUser(userId: string) {
   try {
-    const result = await Users.getUserById(userId);
+    const result = await Configuration.getAllUserConfiguration(userId);
     console.log(result);
-    return result.mpAccessToken;
+    return result[0].mpAccessToken;
   } catch (error) {}
 }
 
@@ -272,19 +272,29 @@ export async function payOrderHandler(orderId: string) {
 export async function createTicketOrder(tickets: TicketOrderType[]) {
   try {
     const result = await TikcetOrders.createTicketOrder(tickets);
-    console.log("Tickets creados:", result);
   } catch (error) {
     console.log("Error creando tickets:", error);
     throw new Error("Error tickets");
   }
 }
-export async function getAllNotifications(userId: string) {
+export async function getAllUserConfiguration(userId: string) {
   try {
-    const result = await Notifications.getAllNotifications(userId);
-    console.log(result);
+    const result = await Configuration.getAllUserConfiguration(userId);
     return result;
   } catch (error) {
     console.log("Error get notificaiones");
+  }
+}
+
+export async function updateUserConfiguration(data: any, configId: string) {
+  console.log(data);
+  try {
+    const result = await Configuration.updateUserConfiguration(data, configId);
+    console.log("Configuracion editada:", result);
+    revalidatePath(`/dashboard/configuracion`);
+  } catch (error) {
+    console.log("Error editando la configuracion:", error);
+    throw new Error("Error editando la configuracion");
   }
 }
 

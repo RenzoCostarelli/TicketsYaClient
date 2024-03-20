@@ -6,10 +6,12 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import CreateCodeForm from "../components/create-discount-code/create-discount-code";
+import { getEventsByUserId } from "@/lib/api/eventos";
 
 export default async function NewEvent() {
   const session = await getServerSession(authOptions);
   const { id } = await getUserByEmail(session?.user?.email as string);
+  const events = await getEventsByUserId(id);
   return (
     <>
       <Button asChild variant="ghost">
@@ -22,7 +24,7 @@ export default async function NewEvent() {
         Nuevo código
       </h1>
 
-      <CreateCodeForm userId={id} />
+      <CreateCodeForm events={ events } />
     </>
   );
 }

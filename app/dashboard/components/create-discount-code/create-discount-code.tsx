@@ -9,79 +9,66 @@ import { useState } from "react";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import DatesPicker from "@/components/dates-picker/dates-picker";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 
 import { DiscountCode } from "@/types/discount-code";
-import { Loader2 } from "lucide-react";
+import { CalendarIcon, Loader2 } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const formSchema = z.object({
   code: z.string().min(5, {
     message: "El titulo debe tener al menos 5 caracteres.",
   }),
+  eventId: z.string(),
   expiresAt: z.date(),
   status: z.enum(["DRAFT", "ACTIVE", "CONCLUDED", "DELETED"]),
   //.refine((file) => file?.length == 1, "File is required."),
 });
 
-export default function CreateCodeForm({ userId }: { userId: string }) {
-  const [dateTimeSelections, setDateTimeSelections] = useState([
-    { id: 0, date: new Date().toISOString().slice(0, 16) },
-  ]);
-
+export default function CreateCodeForm({ events }: { events: any }) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       code: "",
-      //expiresAt: null,
+      eventId: "",
       status: "ACTIVE",
     },
   });
 
-  const handleAddDateTime = () => {
-    const newSelection = {
-      id: dateTimeSelections.length,
-      date: new Date().toISOString().slice(0, 16),
-    };
-    setDateTimeSelections([...dateTimeSelections, newSelection]);
-  };
-
-  const handleRemoveDateTime = (id: number) => {
-    setDateTimeSelections(
-      dateTimeSelections.filter((selection) => selection.id !== id)
-    );
-  };
-
-  const handleDateChange = (date: string, id: number) => {
-    const updatedSelections = dateTimeSelections.map((selection) => {
-      if (selection.id === id) {
-        return { ...selection, date: date };
-      }
-      return selection;
-    });
-    setDateTimeSelections(updatedSelections);
-  };
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const parsedDates = JSON.stringify(dateTimeSelections);
-    setIsLoading(true);    
-    
+    setIsLoading(true);
+
     createDiscountCode({
       code: values.code,
-      expiresAt: new Date(dateTimeSelections[0].date),
+      expiresAt: new Date(values.expiresAt),
       status: "ACTIVE",
+      eventId: values.eventId,
     })
       .then(() => {
         form.reset();
@@ -113,18 +100,77 @@ export default function CreateCodeForm({ userId }: { userId: string }) {
             <FormItem>
               <FormLabel>Código</FormLabel>
               <FormControl>
-                <Input placeholder="Titulo del evento" {...field} />
+                <Input placeholder="Código" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Label>Fechas</Label>
-        <DatesPicker
-          dateTimeSelections={dateTimeSelections}
-          onAddDateTime={handleAddDateTime}
-          onRemoveDateTime={handleRemoveDateTime}
-          onDateChange={handleDateChange}
+        <FormField
+          control={form.control}
+          name="expiresAt"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Fecha</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-[240px] pl-3 text-left font-normal"
+                      )}
+                    >
+                      {field.value ? (
+                        format(field.value, "dd/MM/yyyy")
+                      ) : (
+                        <span>Vencimiento</span>
+                      )}
+                      <CalendarIcon className="ml-auto h-4 w-4" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={field.value}
+                    onSelect={field.onChange}
+                    disabled={(date) => date < new Date()}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="eventId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Evento</FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar evento" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {events.map((event: any) => (
+                    <SelectItem value={event.id} key={event.id}>
+                    {event.title}
+                  </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <FormMessage />
+            </FormItem>
+          )}
         />
 
         <Button type="submit" disabled={isLoading}>

@@ -28,19 +28,19 @@ export async function createDiscountCode(data: DiscountCode) {
   return await db.discountCode.create({ data });
 }
 
-export async function updateDiscountCode(eventId: string, eventData: Partial<DiscountCode>) {
+export async function updateDiscountCode(codeId: string, codeData: Partial<DiscountCode>) {
   return await db.discountCode.update({
     where: {
-      id: eventId,
+      id: codeId,
     },
-    data: eventData,
+    data: codeData,
   });
 }
 
-export async function getDiscountCodeById(eventId: string) {
+export async function getDiscountCodeById(codeId: string) {
   return await db.discountCode.findUnique({
     where: {
-      id: eventId,
+      id: codeId,
     },
   });
 }

@@ -27,36 +27,42 @@ import { useToast } from "@/components/ui/use-toast";
 
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { DiscountCode } from "@/types/discount-code";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Evento } from "@/types/event";
 
 const formSchema = z.object({
   code: z.string().min(5, {
-    message: "El titulo debe tener al menos 5 caracteres.",
+    message: "El código debe tener al menos 5 caracteres.",
   }),
   expiresAt: z.date(),
   status: z.enum(["DRAFT", "ACTIVE", "CONCLUDED", "DELETED"]),
+  eventId: z.string(),
   //.refine((file) => file?.length == 1, "File is required."),
 });
 
 export default function EditCodeForm({
   discountCode,
+  events
 }: {
-  discountCode: DiscountCode;
+  discountCode: DiscountCode,
+  events: Evento[]
 }) {
-  console.log(discountCode);
-
-  //const parsedDates = JSON.parse(discountCode.expiresAt);
-  const [dateTimeSelections, setDateTimeSelections] = useState(
-    discountCode.expiresAt
-  );
-  const [files, setFiles] = useState<File[]>([]);
-  const [deleteImageValue, setDeleteImageValue] = useState<boolean>(false);
+  
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { toast } = useToast();
-
-  const { startUpload } = useUploadThing("profileImage");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -64,42 +70,19 @@ export default function EditCodeForm({
       code: discountCode.code,
       expiresAt: discountCode.expiresAt,
       status: discountCode.status,
+      eventId: discountCode.eventId,
     },
   });
-/*
-  const handleAddDateTime = () => {
-    const newSelection = {
-      id: dateTimeSelections.length,
-      date: new Date().toISOString().slice(0, 16),
-    };
-    setDateTimeSelections([...dateTimeSelections, newSelection]);
-  };
-
-  const handleRemoveDateTime = (id: number) => {
-    setDateTimeSelections(
-      dateTimeSelections.filter((selection: any) => selection.id !== id)
-    );
-  };
-
-  const handleDateChange = (date: string, id: number) => {
-    const updatedSelections = dateTimeSelections.map((selection: any) => {
-      if (selection.id === id) {
-        return { ...selection, date: date };
-      }
-      return selection;
-    });
-    setDateTimeSelections(updatedSelections);
-  };*/
-
+  
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const parsedDates = JSON.stringify(dateTimeSelections);
     setIsLoading(true);
 
     updateDiscountCode(
       {
         code: values.code,
-        expiresAt: new Date(dateTimeSelections),
+        expiresAt: values.expiresAt,
         status: "ACTIVE",
+        eventId: values.eventId,
       },
       discountCode.id as string
     )
@@ -115,6 +98,7 @@ export default function EditCodeForm({
           variant: "destructive",
           title: "Error editando el evento",
         });
+        setIsLoading(false);
       });
   }
 
@@ -132,7 +116,7 @@ export default function EditCodeForm({
               <FormItem>
                 <FormLabel>Código</FormLabel>
                 <FormControl>
-                  <Input placeholder="Titulo del evento" {...field} />
+                  <Input placeholder="Código" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -144,7 +128,7 @@ export default function EditCodeForm({
             name="expiresAt"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>Date of birth</FormLabel>
+                <FormLabel>Fecha</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -156,9 +140,9 @@ export default function EditCodeForm({
                         )}
                       >
                         {field.value ? (
-                          format(field.value, "PPP")
+                          format(field.value, "dd/MM/yyyy")
                         ) : (
-                          <span>Pick a date</span>
+                          <span>Vencimiento</span>
                         )}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
@@ -169,21 +153,44 @@ export default function EditCodeForm({
                       mode="single"
                       selected={field.value}
                       onSelect={field.onChange}
-                      disabled={(date) =>
-                        date > new Date() || date < new Date("1900-01-01")
-                      }
+                      disabled={(date) => date < new Date()}
                       initialFocus
                     />
                   </PopoverContent>
                 </Popover>
-                <FormDescription>
-                  Your date of birth is used to calculate your age.
-                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
 
+          <FormField
+            control={form.control}
+            name="eventId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Evento</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar evento" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {events.map((event: any) => (
+                      <SelectItem value={event.id} key={event.id}>
+                        {event.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <Button type="submit" disabled={isLoading}>
             {isLoading ? (
               <>

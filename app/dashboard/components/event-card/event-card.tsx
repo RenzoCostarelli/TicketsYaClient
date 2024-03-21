@@ -26,14 +26,14 @@ export default function EventCard({ evento }: { evento: Evento }) {
     deleteEvent(evento.id)
       .then(() => {
         toast({
-          title: "Evento borrado!",
+          title: "Evento Eliminado",
         });
       })
       .catch((error: string) => {
-        console.log("error editando el evento", error);
+        console.log("error eliminando el evento", error);
         toast({
           variant: "destructive",
-          title: "Error editando el evento",
+          title: "Error eliminando el evento",
         });
       });
   };
@@ -73,12 +73,7 @@ export default function EventCard({ evento }: { evento: Evento }) {
             <KeyIcon className="w-6 h-6" />
             <span className="sr-only">Tokens</span>
           </Link>
-          <Button
-            className="text-red-500"
-            size="icon"
-            variant="ghost"
-            onClick={handleDeleteEvent}
-          >
+          <Button size="icon" variant="destructive" onClick={handleDeleteEvent}>
             <TrashIcon className="w-6 h-6" />
             <span className="sr-only"> Eliminar </span>
           </Button>

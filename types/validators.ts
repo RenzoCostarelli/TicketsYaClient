@@ -1,3 +1,5 @@
+import { Evento } from "./event";
+
 export type ValidatorToken = {
   id: string;
   token: string;
@@ -6,4 +8,5 @@ export type ValidatorToken = {
   endDate?: Date | null;
   eventId: string;
   useCount: number;
+  event: any;
 };

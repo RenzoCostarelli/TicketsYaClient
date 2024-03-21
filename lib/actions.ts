@@ -352,7 +352,7 @@ export async function getDiscountCodeById(eventId: string) {
 
 export async function createValidatorToken(data: any) {
   try {
-    const result = await ValidatorToken.createTicketType(data);
+    const result = await ValidatorToken.createValidatorToken(data);
   } catch (error) {
     console.log("Error creando token:", error);
     throw new Error("Error validators token");

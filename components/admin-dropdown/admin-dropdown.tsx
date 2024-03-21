@@ -34,19 +34,6 @@ export default function AdminDropDown({
         <Avatar className="h-9 w-9 ml-4 cursor-pointer relative">
           <AvatarImage alt="@shadcn" src={session.user?.image as string} />
           <AvatarFallback>{session.user?.name?.charAt(0)}</AvatarFallback>
-          {!user?.mpAccessToken && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>
-                  <div className="dot-notification"></div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Es necesario cargar los datos de pago</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
-
           <span className="sr-only">Desplegar menú de usuario</span>
         </Avatar>
       </DropdownMenuTrigger>

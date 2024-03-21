@@ -11,6 +11,13 @@ export async function getDiscountCodeByUserId(userId: string) {
     orderBy: {
       createdAt: "desc",
     },
+    include: {
+      event: {
+        select: {
+          title: true
+        }
+      }
+    }
   });
 }
 

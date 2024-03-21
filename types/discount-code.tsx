@@ -1,3 +1,5 @@
+import { Evento } from "./event";
+
 export type GlobalStatus = "DRAFT" | "ACTIVE" | "CONCLUDED" | "DELETED";
 
 export interface DiscountCode {
@@ -7,4 +9,5 @@ export interface DiscountCode {
   code: string;
   expiresAt: Date;
   status: GlobalStatus;
+  event?: any;
 }

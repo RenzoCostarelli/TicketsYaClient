@@ -25,20 +25,7 @@ export default function CodeCard({
 }: {
   discountCode: DiscountCode,
 }) {
-  
-  const getEventTitle = async (eventId: string) => {
-    const evento = await getEventById(eventId);    
-    return evento?.title || '';
-  };
-
-  const [eventTitle, setEventTitle] = useState<string>("");
-
-  useEffect(() => {
-    getEventTitle(discountCode.eventId as string)
-      .then(title => setEventTitle(title))
-      .catch(error => console.error("Error obteniendo el título del evento:", error));
-  }, [discountCode.eventId]);
-  
+    
   const handleDeleteCode = () => {
     deleteDiscountCode(discountCode.id as string)
       .then(() => {
@@ -54,7 +41,7 @@ export default function CodeCard({
         });
       });
   };
-
+  
   return (
     <>
       <Card className="w-full max-w-xl" key={ discountCode.id }>
@@ -62,7 +49,7 @@ export default function CodeCard({
           <div className="grid gap-1">
             <CardTitle>Código de descuento</CardTitle>
             <CardDescription>{ discountCode.code }</CardDescription>
-            <CardDescription>Evento: { eventTitle }</CardDescription>
+            <CardDescription>Evento: { discountCode.event.title }</CardDescription>
             <CardDescription>
               Expira: {format(discountCode.expiresAt, "dd/MM/yyyy")}
             </CardDescription>

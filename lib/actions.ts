@@ -5,8 +5,9 @@ import * as Orders from "@/lib/api/orders";
 import * as TicketTypes from "@/lib/api/ticket-types";
 import * as Users from "@/lib/api/users";
 import * as Configuration from "@/lib/api/user-configuration";
-import * as TikcetOrders from "@/lib/api/ticket-orders";
+import * as TicketOrders from "@/lib/api/ticket-orders";
 import * as Code from "@/lib/api/descuento-code";
+import * as ValidatorToken from "@/lib/api/validators-token";
 import { EventStatus } from "@/types/event";
 import { Product } from "@/types/product";
 import {
@@ -271,7 +272,7 @@ export async function payOrderHandler(orderId: string) {
 
 export async function createTicketOrder(tickets: TicketOrderType[]) {
   try {
-    const result = await TikcetOrders.createTicketOrder(tickets);
+    const result = await TicketOrders.createTicketOrder(tickets);
   } catch (error) {
     console.log("Error creando tickets:", error);
     throw new Error("Error tickets");
@@ -287,7 +288,6 @@ export async function getAllUserConfiguration(userId: string) {
 }
 
 export async function updateUserConfiguration(data: any, configId: string) {
-  console.log(data);
   try {
     const result = await Configuration.updateUserConfiguration(data, configId);
     console.log("Configuracion editada:", result);
@@ -300,7 +300,7 @@ export async function updateUserConfiguration(data: any, configId: string) {
 
 export async function createDiscountCode(data: DiscountCode) {
   let codeId = null;
-  console.log(data)
+  console.log(data);
   try {
     const result = await Code.createDiscountCode(data);
     console.log("Código creado:", result);
@@ -347,5 +347,23 @@ export async function getDiscountCodeById(eventId: string) {
   } catch (error) {
     console.log("Error en getEventById:", error);
     throw new Error("Error o");
+  }
+}
+
+export async function createValidatorToken(data: any) {
+  try {
+    const result = await ValidatorToken.createTicketType(data);
+  } catch (error) {
+    console.log("Error creando token:", error);
+    throw new Error("Error validators token");
+  }
+}
+
+export async function getTokensByEvent(eventId: string) {
+  try {
+    const result = await ValidatorToken.getTokensByEvent(eventId);
+    return result;
+  } catch (error) {
+    console.log("Error get tokens");
   }
 }

@@ -69,10 +69,10 @@ export default function EventCard({ evento }: { evento: Evento }) {
             <BarChartIcon className="w-6 h-6" />
             <span className="sr-only">Estadisticas</span>
           </Button>
-          <Button size="icon" variant="ghost">
+          <Link href={`dashboard/evento/${evento.id}/validadores`}>
             <KeyIcon className="w-6 h-6" />
-            <span className="sr-only">Key</span>
-          </Button>
+            <span className="sr-only">Tokens</span>
+          </Link>
           <Button
             className="text-red-500"
             size="icon"

@@ -180,9 +180,13 @@ enum TicketOrderStatus {
 }
 
 model ValidatorToken {
-  id      String   @id @default(cuid())
-  token   String   @unique
-  eventId String   // Esto asume que cada token está relacionado con un evento específico
+  id          String   @id @default(cuid())
+  token       String   @unique
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  endDate     DateTime?
+  eventId     String  
+  useCount    Int         @default(0) // Cuantas veces se usó el token
   event   Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
   @@map("validator_tokens")
